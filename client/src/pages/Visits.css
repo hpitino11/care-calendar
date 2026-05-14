@@ -1,0 +1,178 @@
+/* Pulls in .page-header, .page-title, .btn-primary, modal styles */
+@import './Caregivers.css';
+
+/* ── Search bar ── */
+.visits-search {
+  max-width: 400px;
+  margin-bottom: 0;
+}
+
+/* ── Filter tabs ── */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid #8aa9d7;
+  background: #ffffff;
+  color: #3a54a4;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Spartan', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.filter-btn--active {
+  background: #f14e4b;
+  border-color: #f14e4b;
+  color: #ffffff;
+}
+
+.filter-btn:hover:not(.filter-btn--active) {
+  background: #fef5f5;
+}
+
+/* ── Visit list — white card container ── */
+.visits-list {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(58, 84, 164, 0.08);
+  border: 1px solid rgba(248, 168, 167, 0.3);
+  overflow: hidden;
+}
+
+.visits-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.visit-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(248, 168, 167, 0.4);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.visit-row:last-child {
+  border-bottom: none;
+}
+
+.visit-row:hover {
+  background: #fef5f5;
+}
+
+/* ── Date block ── */
+.visit-date-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 48px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.visit-day {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f14e4b;
+  line-height: 1;
+}
+
+.visit-month {
+  font-size: 10px;
+  color: #9090a0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Center info ── */
+.visit-info {
+  flex: 1;
+}
+
+.visit-caregiver {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1a1a2e;
+}
+
+.visit-client {
+  font-size: 13px;
+  color: #4a4a6a;
+  margin-top: 2px;
+}
+
+.visit-time {
+  font-size: 12px;
+  color: #9090a0;
+  margin-top: 4px;
+}
+
+.visit-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Status badges ── */
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Spartan', sans-serif;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status-badge--scheduled {
+  background: #3a54a4;
+  color: #ffffff;
+}
+
+.status-badge--in_progress {
+  background: #f8a8a7;
+  color: #3a54a4;
+}
+
+.status-badge--completed {
+  background: #e8e8e8;
+  color: #9090a0;
+}
+
+.status-badge--cancelled {
+  background: #f14e4b;
+  color: #ffffff;
+}
+
+/* ── Visit detail modal ── */
+.visit-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.visit-detail p {
+  font-size: 14px;
+  color: #4a4a6a;
+}
+
+.detail-label {
+  font-weight: 700;
+  color: #3a54a4;
+  margin-right: 8px;
+}

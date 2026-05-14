@@ -1,0 +1,10 @@
+.main-content {
+  margin-left: 240px;
+  margin-top: 64px;
+  padding: 32px;
+  min-height: calc(100vh - 64px);
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}

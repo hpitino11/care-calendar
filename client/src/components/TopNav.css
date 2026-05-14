@@ -1,0 +1,32 @@
+.topnav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #f8a8a7;
+  box-shadow: 0 2px 12px rgba(241, 78, 75, 0.08);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.topnav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topnav-logo-text {
+  font-weight: 700;
+  font-size: 22px;
+  color: #3a54a4;
+  letter-spacing: -0.02em;
+}
+
+.topnav-heart {
+  color: #f14e4b;
+  font-size: 16px;
+}
