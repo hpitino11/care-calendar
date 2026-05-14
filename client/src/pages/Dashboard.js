@@ -50,7 +50,7 @@ function Dashboard() {
   const today = new Date().toISOString().split('T')[0];
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? 'Good morning, Admin 👋' : hour < 17 ? 'Good afternoon, Admin 👋' : 'Good evening, Admin 👋';
   const dateLabel = new Date().toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',
   });
