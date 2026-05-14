@@ -1,6 +1,6 @@
 # Care Calendar
 
-An admin dashboard for managing home care visits, caregivers, and clients. Built as a take-home project for Village Caregiving Corporate.
+An admin dashboard for managing home care visits, caregivers, and clients. Built as a take-home project as the technical portion of an interview.
 
 > **Note:** This is a technical demo intended for reviewer evaluation. In a production environment it would be secured behind authentication, role-based access control, and HTTPS-only API communication.
 
