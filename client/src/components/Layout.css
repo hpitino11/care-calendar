@@ -1,9 +1,23 @@
-.main-content {
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.right-pane {
+  flex: 1;
   margin-left: var(--sidebar-width);
-  margin-top: var(--nav-height);
-  padding: 1.5rem;
-  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
   overflow-x: hidden;
+  padding: 1.5rem;
   position: relative;
   z-index: 1;
   background: transparent;

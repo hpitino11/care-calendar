@@ -20,6 +20,7 @@
 html {
   font-size: 100%; /* 1rem = browser base (16px default) — scales with user settings */
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 * {
@@ -33,8 +34,6 @@ body {
   background: linear-gradient(135deg, #fde8e8 0%, #f8d0d0 25%, #e8d8f5 60%, #d0dff5 100%);
   color: var(--text-dark);
   min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
 }
 
 @keyframes blobFloat1 {

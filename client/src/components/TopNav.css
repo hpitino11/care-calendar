@@ -1,19 +1,14 @@
 .topnav {
-  position: fixed;
-  top: 0;
-  left: var(--sidebar-width);
-  right: 0;
   height: var(--nav-height);
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(0.75rem);
-  -webkit-backdrop-filter: blur(0.75rem);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   padding: 0 2rem;
   gap: 1rem;
   z-index: 200;
   overflow: visible;
+  position: relative;
 }
 
 /* ── Left spacer — mirrors right panel so search lands in the true center ── */

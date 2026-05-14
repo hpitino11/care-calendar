@@ -4,7 +4,7 @@ import './Layout.css';
 
 function Layout({ children }) {
   return (
-    <div>
+    <div className="app-shell">
       <div className="blob blob-a" />
       <div className="blob blob-b" />
       <div className="blob blob-c" />
@@ -12,11 +12,13 @@ function Layout({ children }) {
       <div className="blob blob-e" />
       <div className="blob blob-f" />
       <div className="blob blob-g" />
-      <TopNav />
       <Sidebar />
-      <main className="main-content">
-        {children}
-      </main>
+      <div className="right-pane">
+        <TopNav />
+        <main className="main-content">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
