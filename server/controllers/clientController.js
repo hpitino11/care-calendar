@@ -11,6 +11,11 @@ const getAllClients = async (req, res, next) => {
 
 const createClient = async (req, res, next) => {
   const { name, email, phone } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: 'name is required' });
+  }
+
   try {
     const result = await pool.query(
       'INSERT INTO clients (name, email, phone) VALUES ($1, $2, $3) RETURNING *',

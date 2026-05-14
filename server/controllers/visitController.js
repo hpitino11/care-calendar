@@ -49,9 +49,16 @@ const createVisit = async (req, res, next) => {
   }
 };
 
+const VALID_STATUSES = ['scheduled', 'completed', 'cancelled'];
+
 const updateVisitStatus = async (req, res, next) => {
   const { id } = req.params;
   const { status } = req.body;
+
+  if (!status || !VALID_STATUSES.includes(status)) {
+    return res.status(400).json({ message: 'status must be scheduled, completed, or cancelled' });
+  }
+
   try {
     const result = await pool.query(
       'UPDATE visits SET status = $1 WHERE id = $2 RETURNING *',
