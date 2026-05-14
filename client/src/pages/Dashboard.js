@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -32,6 +32,19 @@ function formatTime(timeStr) {
   return `${display}:${m} ${ampm}`;
 }
 
+function formatDuration(startTime, endTime) {
+  if (!startTime || !endTime) return '';
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const totalMins = (eh * 60 + em) - (sh * 60 + sm);
+  if (totalMins <= 0) return '';
+  const hours = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+}
+
 function Dashboard() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +52,8 @@ function Dashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [prefillDate, setPrefillDate] = useState('');
   const [selectedVisit, setSelectedVisit] = useState(null);
+  const [tooltip, setTooltip] = useState(null);
+  const tooltipTimeout = useRef(null);
 
   const fetchVisits = async () => {
     try {
@@ -107,6 +122,30 @@ function Dashboard() {
         },
       };
     });
+
+  const handleEventMouseEnter = (info) => {
+    if (info.view.type === 'dayGridMonth') return;
+    if (info.event.allDay) return;
+    clearTimeout(tooltipTimeout.current);
+    const rect = info.el.getBoundingClientRect();
+    const tooltipWidth = 276;
+    let x = rect.right + 12;
+    if (x + tooltipWidth > window.innerWidth - 16) {
+      x = rect.left - tooltipWidth - 12;
+    }
+    let y = rect.top;
+    if (y + 280 > window.innerHeight - 16) {
+      y = window.innerHeight - 296;
+    }
+    setTooltip({ x, y, visit: info.event.extendedProps.visit });
+  };
+
+  const handleEventMouseLeave = () => {
+    tooltipTimeout.current = setTimeout(() => setTooltip(null), 120);
+  };
+
+  const handleTooltipMouseEnter = () => clearTimeout(tooltipTimeout.current);
+  const handleTooltipMouseLeave = () => setTooltip(null);
 
   // Clicking an empty date slot pre-fills the date in the add modal
   const handleDateClick = (info) => {
@@ -269,6 +308,8 @@ function Dashboard() {
           eventDisplay="block"
           dateClick={handleDateClick}
           eventClick={handleEventClick}
+          eventMouseEnter={handleEventMouseEnter}
+          eventMouseLeave={handleEventMouseLeave}
           eventMaxStack={3}
           slotEventOverlap={false}
           eventMinHeight={40}
@@ -377,14 +418,28 @@ function Dashboard() {
               : 0;
             const isShort = durationMs > 0 && durationMs <= 2 * 60 * 60 * 1000;
 
+            // Week / Day — shared card style: light navy tint + left border
+            const cardStyle = {
+              background: 'rgba(45, 63, 142, 0.08)',
+              borderLeft: '3px solid #2d3f8e',
+              borderRadius: '0 0.5rem 0.5rem 0',
+              height: '100%',
+              width: '100%',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              boxSizing: 'border-box',
+            };
+
             if (isShort) {
               return (
-                <div style={{ padding: '4px 8px', overflow: 'hidden' }}>
+                <div style={{ ...cardStyle, padding: '3px 7px', justifyContent: 'center' }}>
                   <div style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 700,
-                    fontSize: '12px',
-                    color: '#ffffff',
+                    fontSize: '11px',
+                    color: '#1a1a2e',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -395,40 +450,31 @@ function Dashboard() {
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 400,
                     fontSize: '10px',
-                    color: 'rgba(255,255,255,0.7)',
-                    letterSpacing: '0.02em',
+                    color: '#6a6a8a',
                     whiteSpace: 'nowrap',
                   }}>
-                    {formatEventTime(arg.event.start)} - {formatEventTime(arg.event.end)}
+                    {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
                   </div>
                 </div>
               );
             }
 
             return (
-              <div style={{
-                padding: '6px 8px',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                gap: '2px',
-                overflow: 'hidden',
-              }}>
+              <div style={{ ...cardStyle, padding: '6px 8px', gap: '2px' }}>
                 <div style={{
                   fontFamily: 'Spartan, sans-serif',
                   fontWeight: 400,
                   fontSize: '10px',
-                  color: 'rgba(255,255,255,0.7)',
+                  color: '#6a6a8a',
                   letterSpacing: '0.02em',
                 }}>
-                  {formatEventTime(arg.event.start)} - {formatEventTime(arg.event.end)}
+                  {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
                 </div>
                 <div style={{
                   fontFamily: 'Spartan, sans-serif',
                   fontWeight: 700,
                   fontSize: '12px',
-                  color: '#ffffff',
+                  color: '#1a1a2e',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -439,7 +485,7 @@ function Dashboard() {
                   fontFamily: 'Spartan, sans-serif',
                   fontWeight: 400,
                   fontSize: '11px',
-                  color: 'rgba(255,255,255,0.8)',
+                  color: '#4a4a6a',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -448,22 +494,15 @@ function Dashboard() {
                 </div>
                 {arg.event.extendedProps.serviceType && (
                   <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    marginTop: '4px',
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '9px',
+                    color: '#2d3f8e',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginTop: '2px',
                   }}>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>♥</span>
-                    <span style={{
-                      fontFamily: 'Spartan, sans-serif',
-                      fontWeight: 700,
-                      fontSize: '9px',
-                      color: 'rgba(255,255,255,0.7)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                    }}>
-                      {arg.event.extendedProps.serviceType}
-                    </span>
+                    {arg.event.extendedProps.serviceType}
                   </div>
                 )}
               </div>
@@ -487,6 +526,68 @@ function Dashboard() {
           onClose={() => setSelectedVisit(null)}
           onSuccess={fetchVisits}
         />
+      )}
+
+      {tooltip && (
+        <div
+          className="visit-tooltip"
+          style={{ top: tooltip.y, left: tooltip.x }}
+          onMouseEnter={handleTooltipMouseEnter}
+          onMouseLeave={handleTooltipMouseLeave}
+        >
+          <p className="visit-tooltip-time">
+            {formatTime(tooltip.visit.start_time)} – {formatTime(tooltip.visit.end_time)}
+          </p>
+          <div className="visit-tooltip-row">
+            <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">
+              {tooltip.visit.caregiver_name?.charAt(0)}
+            </div>
+            <div>
+              <p className="visit-tooltip-name">{tooltip.visit.caregiver_name}</p>
+              <p className="visit-tooltip-label">Primary Caregiver</p>
+            </div>
+          </div>
+          <div className="visit-tooltip-row">
+            <div className="visit-tooltip-avatar visit-tooltip-avatar--client">
+              {tooltip.visit.client_name?.charAt(0)}
+            </div>
+            <div>
+              <p className="visit-tooltip-name">{tooltip.visit.client_name}</p>
+              <p className="visit-tooltip-label">Client</p>
+            </div>
+          </div>
+          {tooltip.visit.service_type && (
+            <div className="visit-tooltip-row">
+              <div className="visit-tooltip-icon-wrap">♥</div>
+              <div>
+                <p className="visit-tooltip-name">{tooltip.visit.service_type}</p>
+                <p className="visit-tooltip-label">Service Type</p>
+              </div>
+            </div>
+          )}
+          <div className="visit-tooltip-row">
+            <div className="visit-tooltip-icon-wrap">⏱</div>
+            <div>
+              <p className="visit-tooltip-name">{formatDuration(tooltip.visit.start_time, tooltip.visit.end_time)}</p>
+              <p className="visit-tooltip-label">Duration</p>
+            </div>
+          </div>
+          <div className="visit-tooltip-row">
+            <div className={`visit-tooltip-status-dot visit-tooltip-status-dot--${tooltip.visit.status}`} />
+            <div>
+              <p className="visit-tooltip-name" style={{ textTransform: 'capitalize' }}>
+                {tooltip.visit.status?.replace('_', ' ')}
+              </p>
+              <p className="visit-tooltip-label">Status</p>
+            </div>
+          </div>
+          <button
+            className="visit-tooltip-details-btn"
+            onClick={() => { setSelectedVisit(tooltip.visit); setTooltip(null); }}
+          >
+            View details <span>›</span>
+          </button>
+        </div>
       )}
     </div>
   );

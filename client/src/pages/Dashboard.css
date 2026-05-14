@@ -173,9 +173,24 @@
 
 /* ── Fix 1 — Time grid event blocks ── */
 .fc-timegrid-event {
-  border-radius: 0.625rem !important;
+  border-radius: 0 0.5rem 0.5rem 0 !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(45, 63, 142, 0.25) !important;
+  box-shadow: none !important;
+}
+
+/* Week/Day view — transparent so eventContent controls background */
+.fc-timeGridWeek-view .fc-timegrid-event,
+.fc-timeGridDay-view .fc-timegrid-event {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.fc-timeGridWeek-view .fc-event-main,
+.fc-timeGridDay-view .fc-event-main {
+  padding: 0 !important;
+  height: 100% !important;
 }
 
 /* ── Fix 2 — All event blocks: solid navy, no border ── */
@@ -319,4 +334,121 @@
 
 .fc-timeGridWeek-view .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
   color: #f14e4b !important;
+}
+
+/* ── Visit hover tooltip ── */
+.visit-tooltip {
+  position: fixed;
+  z-index: 9999;
+  width: 17.25rem;
+  background: #ffffff;
+  border-radius: 0.875rem;
+  padding: 1rem 1.125rem;
+  box-shadow: 0 0.5rem 2rem rgba(26, 26, 46, 0.16);
+  border: 1px solid rgba(138, 169, 215, 0.25);
+  pointer-events: auto;
+}
+
+.visit-tooltip-time {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
+}
+
+.visit-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+
+.visit-tooltip-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.visit-tooltip-avatar--caregiver {
+  background: linear-gradient(135deg, #2d3f8e 0%, #3a54a4 100%);
+}
+
+.visit-tooltip-avatar--client {
+  background: linear-gradient(135deg, #f14e4b 0%, #f8a8a7 100%);
+}
+
+.visit-tooltip-icon-wrap {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(45, 63, 142, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.visit-tooltip-status-dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visit-tooltip-status-dot::after {
+  content: '';
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+}
+
+.visit-tooltip-status-dot--scheduled::after  { background: #3a54a4; }
+.visit-tooltip-status-dot--in_progress::after { background: #d4a843; }
+.visit-tooltip-status-dot--completed::after  { background: #9ca3af; }
+.visit-tooltip-status-dot--cancelled::after  { background: #e07070; }
+
+.visit-tooltip-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.2;
+}
+
+.visit-tooltip-label {
+  font-size: 0.6875rem;
+  color: #9090a0;
+  margin-top: 0.0625rem;
+}
+
+.visit-tooltip-details-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(45, 63, 142, 0.06);
+  border: none;
+  border-radius: 0.5rem;
+  color: #2d3f8e;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-family: 'Spartan', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.visit-tooltip-details-btn:hover {
+  background: rgba(45, 63, 142, 0.12);
 }
