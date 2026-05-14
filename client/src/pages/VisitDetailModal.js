@@ -45,6 +45,7 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
   const [editMode, setEditMode] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [isMultiDay, setIsMultiDay] = useState(false);
+  const [editDateError, setEditDateError] = useState('');
   const [caregivers, setCaregivers] = useState([]);
   const [clients, setClients] = useState([]);
 
@@ -117,6 +118,17 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+
+    if (isMultiDay && !editForm.end_date) {
+      setEditDateError('Please select an end date.');
+      return;
+    }
+
+    if (isMultiDay && editForm.end_date < editForm.visit_date) {
+      setEditDateError('End date must be after start date.');
+      return;
+    }
+
     try {
       await fetch(`${BASE_URL}/api/visits/${visit.id}`, {
         method: 'PUT',
@@ -187,6 +199,7 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
                 checked={isMultiDay}
                 onChange={(e) => {
                   setIsMultiDay(e.target.checked);
+                  setEditDateError('');
                   if (!e.target.checked) {
                     setEditForm({ ...editForm, end_date: '' });
                   }
@@ -202,9 +215,10 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
                 type="date"
                 name="end_date"
                 value={editForm.end_date}
-                onChange={handleEditChange}
+                onChange={(e) => { handleEditChange(e); setEditDateError(''); }}
                 min={editForm.visit_date}
               />
+              {editDateError && <p className="field-error">{editDateError}</p>}
             </div>
           )}
           <div className="form-group">

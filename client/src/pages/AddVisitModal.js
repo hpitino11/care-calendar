@@ -72,7 +72,12 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isMultiDay && formData.end_date && formData.end_date < formData.visit_date) {
+    if (isMultiDay && !formData.end_date) {
+      setDateError('Please select an end date.');
+      return;
+    }
+
+    if (isMultiDay && formData.end_date < formData.visit_date) {
       setDateError('End date must be after start date.');
       return;
     }
