@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import BASE_URL from '../api';
 
+// Service types offered by Village Caregiving
 const SERVICES = [
   'Respite Care',
   'Hygiene Assistance',
@@ -17,6 +18,8 @@ const SERVICES = [
   '24/7 Care',
 ];
 
+// Generates time options in 15-minute increments from 6:00 AM to 10:00 PM.
+// Returns an array of { value: "HH:MM", label: "H:MM AM/PM" } objects.
 function generateTimeOptions() {
   const options = [];
   for (let hour = 6; hour <= 22; hour++) {
@@ -29,17 +32,19 @@ function generateTimeOptions() {
   return options;
 }
 
+// Pre-built at module level so it isn't recalculated on every render
 const TIME_OPTIONS = generateTimeOptions();
 
 function AddVisitModal({ onClose, onSuccess, prefillDate }) {
+  // ── State ──
   const [caregivers, setCaregivers] = useState([]);
   const [clients, setClients] = useState([]);
-  const [isMultiDay, setIsMultiDay] = useState(false);
+  const [isMultiDay, setIsMultiDay] = useState(false); // toggles end date field visibility
   const [dateError, setDateError] = useState('');
   const [formData, setFormData] = useState({
     caregiver_id: '',
     client_id: '',
-    visit_date: prefillDate || '',
+    visit_date: prefillDate || '', // pre-filled when clicking a date on the calendar
     end_date: '',
     start_time: '',
     end_time: '',
@@ -47,7 +52,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
     service_type: '',
   });
 
-  // Load dropdowns when the modal opens
+  // ── Load dropdown data ──
+  // Fetch caregivers and clients in parallel when the modal first opens
   useEffect(() => {
     const fetchDropdowns = async () => {
       try {
@@ -64,14 +70,17 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
     fetchDropdowns();
   }, []);
 
+  // ── Form handlers ──
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear the date error whenever the end date field changes
     if (e.target.name === 'end_date') setDateError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate the end date before submitting a multi-day visit
     if (isMultiDay && !formData.end_date) {
       setDateError('Please select an end date.');
       return;
@@ -82,7 +91,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
       return;
     }
 
-    // Only include end_date when scheduling a multi-day visit
+    // Only include end_date in the request body when scheduling a multi-day visit
     const body = { ...formData };
     if (!isMultiDay) delete body.end_date;
 
@@ -92,7 +101,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      onSuccess();
+      onSuccess(); // re-fetch the visit list in the parent component
       onClose();
     } catch (err) {
       alert('Something went wrong. Please try again.');
@@ -103,6 +112,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
     <Modal onClose={onClose}>
       <h2 className="modal-title">Schedule Visit</h2>
       <form onSubmit={handleSubmit} className="form">
+
+        {/* Caregiver and client selects are populated from the API */}
         <div className="form-group">
           <label>Caregiver *</label>
           <select name="caregiver_id" value={formData.caregiver_id} onChange={handleChange} required>
@@ -130,6 +141,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             ))}
           </select>
         </div>
+
         <div className="form-group">
           <label>Start Date *</label>
           <input
@@ -140,6 +152,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             required
           />
         </div>
+
+        {/* Multi-day toggle — checking this reveals the end date field */}
         <div className="form-group">
           <label className="toggle-label">
             <input
@@ -147,6 +161,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
               checked={isMultiDay}
               onChange={(e) => {
                 setIsMultiDay(e.target.checked);
+                // Clear end date and any error when toggling off
                 if (!e.target.checked) {
                   setFormData({ ...formData, end_date: '' });
                   setDateError('');
@@ -156,6 +171,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             <span>Multi-day visit</span>
           </label>
         </div>
+
         {isMultiDay && (
           <div className="form-group">
             <label>End Date</label>
@@ -164,11 +180,13 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
               name="end_date"
               value={formData.end_date}
               onChange={handleChange}
-              min={formData.visit_date}
+              min={formData.visit_date} // prevents selecting an end date before the start
             />
             {dateError && <p className="field-error">{dateError}</p>}
           </div>
         )}
+
+        {/* Time selects use pre-generated 15-minute increment options */}
         <div className="form-group">
           <label>Start Time *</label>
           <select name="start_time" value={formData.start_time} onChange={handleChange} required>
@@ -187,6 +205,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             ))}
           </select>
         </div>
+
         <div className="form-group">
           <label>Notes</label>
           <textarea
@@ -197,6 +216,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             rows={3}
           />
         </div>
+
         <div className="form-actions">
           <button type="submit" className="btn-submit">Schedule Visit</button>
           <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>

@@ -3,6 +3,8 @@ import Modal from '../components/Modal';
 import BASE_URL from '../api';
 import './Clients.css';
 
+// Formats a phone number string into (XXX) XXX-XXXX as the user types.
+// Non-digit characters are stripped and input is capped at 10 digits.
 function formatPhone(value) {
   const digits = value.replace(/\D/g, '').slice(0, 10);
   if (digits.length <= 3) return digits.length ? `(${digits}` : '';
@@ -10,21 +12,24 @@ function formatPhone(value) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+// Capitalizes the first character of an email address as the user types
 function capitalizeEmail(value) {
   if (!value) return '';
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function Clients() {
+  // ── State ──
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false); // controls Add Client modal visibility
   const [search, setSearch] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
-  const [editingClient, setEditingClient] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' }); // new client form
+  const [editingClient, setEditingClient] = useState(null); // null when no edit modal is open
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' }); // edit client form
 
+  // ── Data fetching ──
   const fetchClients = async () => {
     try {
       const res = await fetch(`${BASE_URL}/api/clients`);
@@ -41,8 +46,10 @@ function Clients() {
     fetchClients();
   }, []);
 
+  // ── Add form handlers ──
   const handleChange = (e) => {
     let { name, value } = e.target;
+    // Apply formatting as the user types
     if (name === 'phone') value = formatPhone(value);
     if (name === 'email') value = capitalizeEmail(value);
     setFormData({ ...formData, [name]: value });
@@ -56,7 +63,7 @@ function Clients() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      setFormData({ name: '', email: '', phone: '' });
+      setFormData({ name: '', email: '', phone: '' }); // reset form after successful submission
       setShowModal(false);
       fetchClients();
     } catch (err) {
@@ -64,6 +71,7 @@ function Clients() {
     }
   };
 
+  // ── Delete handler ──
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this client?')) return;
     try {
@@ -74,6 +82,8 @@ function Clients() {
     }
   };
 
+  // ── Edit form handlers ──
+  // Pre-populates the edit form with the selected client's existing data
   const handleEditClick = (client) => {
     setEditingClient(client);
     setEditForm({ name: client.name, email: client.email || '', phone: client.phone || '' });
@@ -101,6 +111,8 @@ function Clients() {
     }
   };
 
+  // ── Filtering ──
+  // Client-side search filter — matches on client name
   const filtered = clients.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -110,6 +122,7 @@ function Clients() {
 
   return (
     <div>
+      {/* Page header */}
       <div className="page-header">
         <div>
           <h1 className="page-title">Clients</h1>
@@ -120,6 +133,7 @@ function Clients() {
         </button>
       </div>
 
+      {/* Search bar */}
       <div className="search-wrap">
         <svg className="search-icon-inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8"/>
@@ -134,12 +148,14 @@ function Clients() {
         />
       </div>
 
+      {/* Client list */}
       {filtered.length === 0 ? (
         <p className="state-empty">No clients found.</p>
       ) : (
         <div className="caregiver-list">
           {filtered.map((cl) => (
             <div key={cl.id} className="caregiver-card">
+              {/* Avatar uses the first letter of the client's name */}
               <div className="caregiver-avatar">
                 {cl.name.charAt(0).toUpperCase()}
               </div>
@@ -184,7 +200,7 @@ function Clients() {
         </div>
       )}
 
-      {/* Add modal */}
+      {/* Add Client modal */}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <h2 className="modal-title">Add Client</h2>
@@ -203,7 +219,6 @@ function Clients() {
               <label>Email</label>
               <input
                 name="email"
-                type="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="email@example.com"
@@ -228,7 +243,7 @@ function Clients() {
         </Modal>
       )}
 
-      {/* Edit modal */}
+      {/* Edit Client modal */}
       {editingClient && (
         <Modal onClose={() => setEditingClient(null)}>
           <h2 className="modal-title">Edit Client</h2>
@@ -247,7 +262,6 @@ function Clients() {
               <label>Email</label>
               <input
                 name="email"
-                type="email"
                 value={editForm.email}
                 onChange={handleEditChange}
                 placeholder="email@example.com"

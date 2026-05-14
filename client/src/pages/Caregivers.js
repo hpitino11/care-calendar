@@ -3,6 +3,8 @@ import Modal from '../components/Modal';
 import BASE_URL from '../api';
 import './Caregivers.css';
 
+// Formats a phone number string into (XXX) XXX-XXXX as the user types.
+// Non-digit characters are stripped and input is capped at 10 digits.
 function formatPhone(value) {
   const digits = value.replace(/\D/g, '').slice(0, 10);
   if (digits.length <= 3) return digits.length ? `(${digits}` : '';
@@ -10,21 +12,24 @@ function formatPhone(value) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+// Capitalizes the first character of an email address as the user types
 function capitalizeEmail(value) {
   if (!value) return '';
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function Caregivers() {
+  // ── State ──
   const [caregivers, setCaregivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false); // controls Add Caregiver modal visibility
   const [search, setSearch] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
-  const [editingCaregiver, setEditingCaregiver] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' }); // new caregiver form
+  const [editingCaregiver, setEditingCaregiver] = useState(null); // null when no edit modal is open
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' }); // edit caregiver form
 
+  // ── Data fetching ──
   const fetchCaregivers = async () => {
     try {
       const res = await fetch(`${BASE_URL}/api/caregivers`);
@@ -41,8 +46,10 @@ function Caregivers() {
     fetchCaregivers();
   }, []);
 
+  // ── Add form handlers ──
   const handleChange = (e) => {
     let { name, value } = e.target;
+    // Apply formatting as the user types
     if (name === 'phone') value = formatPhone(value);
     if (name === 'email') value = capitalizeEmail(value);
     setFormData({ ...formData, [name]: value });
@@ -56,7 +63,7 @@ function Caregivers() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      setFormData({ name: '', email: '', phone: '' });
+      setFormData({ name: '', email: '', phone: '' }); // reset form after successful submission
       setShowModal(false);
       fetchCaregivers();
     } catch (err) {
@@ -64,6 +71,7 @@ function Caregivers() {
     }
   };
 
+  // ── Delete handler ──
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this caregiver?')) return;
     try {
@@ -74,6 +82,8 @@ function Caregivers() {
     }
   };
 
+  // ── Edit form handlers ──
+  // Pre-populates the edit form with the selected caregiver's existing data
   const handleEditClick = (caregiver) => {
     setEditingCaregiver(caregiver);
     setEditForm({ name: caregiver.name, email: caregiver.email || '', phone: caregiver.phone || '' });
@@ -101,6 +111,8 @@ function Caregivers() {
     }
   };
 
+  // ── Filtering ──
+  // Client-side search filter — matches on caregiver name
   const filtered = caregivers.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -110,6 +122,7 @@ function Caregivers() {
 
   return (
     <div>
+      {/* Page header */}
       <div className="page-header">
         <div>
           <h1 className="page-title">Caregivers</h1>
@@ -120,6 +133,7 @@ function Caregivers() {
         </button>
       </div>
 
+      {/* Search bar */}
       <div className="search-wrap">
         <svg className="search-icon-inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8"/>
@@ -134,12 +148,14 @@ function Caregivers() {
         />
       </div>
 
+      {/* Caregiver list */}
       {filtered.length === 0 ? (
         <p className="state-empty">No caregivers found.</p>
       ) : (
         <div className="caregiver-list">
           {filtered.map((cg) => (
             <div key={cg.id} className="caregiver-card">
+              {/* Avatar uses the first letter of the caregiver's name */}
               <div className="caregiver-avatar">
                 {cg.name.charAt(0).toUpperCase()}
               </div>
@@ -184,7 +200,7 @@ function Caregivers() {
         </div>
       )}
 
-      {/* Add modal */}
+      {/* Add Caregiver modal */}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <h2 className="modal-title">Add Caregiver</h2>
@@ -203,7 +219,6 @@ function Caregivers() {
               <label>Email</label>
               <input
                 name="email"
-                type="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="email@example.com"
@@ -228,7 +243,7 @@ function Caregivers() {
         </Modal>
       )}
 
-      {/* Edit modal */}
+      {/* Edit Caregiver modal */}
       {editingCaregiver && (
         <Modal onClose={() => setEditingCaregiver(null)}>
           <h2 className="modal-title">Edit Caregiver</h2>
@@ -247,7 +262,6 @@ function Caregivers() {
               <label>Email</label>
               <input
                 name="email"
-                type="email"
                 value={editForm.email}
                 onChange={handleEditChange}
                 placeholder="email@example.com"

@@ -8,12 +8,14 @@ import VisitDetailModal from './VisitDetailModal';
 import BASE_URL from '../api';
 import './Dashboard.css';
 
+// All visit statuses use the same navy color on the calendar for visual consistency
 const STATUS_COLORS = {
   scheduled:   '#2d3f8e',
   in_progress: '#2d3f8e',
   completed:   '#2d3f8e',
 };
 
+// Formats a JS Date object to a readable 12-hour time string (used in week/day event cards)
 const formatEventTime = (date) => {
   if (!date) return '';
   return new Date(date).toLocaleTimeString('en-US', {
@@ -23,6 +25,7 @@ const formatEventTime = (date) => {
   });
 };
 
+// Formats a raw HH:MM time string from the database into 12-hour format
 function formatTime(timeStr) {
   if (!timeStr) return '';
   const [h, m] = timeStr.split(':');
@@ -32,6 +35,7 @@ function formatTime(timeStr) {
   return `${display}:${m} ${ampm}`;
 }
 
+// Calculates and formats the duration between two HH:MM time strings
 function formatDuration(startTime, endTime) {
   if (!startTime || !endTime) return '';
   const [sh, sm] = startTime.split(':').map(Number);
@@ -45,12 +49,15 @@ function formatDuration(startTime, endTime) {
   return `${hours}h ${mins}m`;
 }
 
-// Groups overlapping or close (≤30 min gap) timed events per day for week view
+// Groups overlapping or close (≤30 min gap) timed events per day for the week view.
+// Single events pass through unchanged. Groups of 2+ are merged into one meta-event
+// that stores the original visits in extendedProps so the tooltip can list them.
 function groupWeekViewEvents(events) {
-  const CLOSE_MS = 30 * 60 * 1000;
+  const CLOSE_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
   const byDay = {};
   const result = [];
 
+  // Separate all-day events (multi-day visits) from timed events, then bucket by date
   events.forEach((event) => {
     if (event.allDay) { result.push(event); return; }
     const day = event.start.split('T')[0];
@@ -58,6 +65,7 @@ function groupWeekViewEvents(events) {
     byDay[day].push(event);
   });
 
+  // For each day, sort events by start time and greedily merge overlapping/close ones
   Object.values(byDay).forEach((dayEvents) => {
     const sorted = [...dayEvents].sort((a, b) => new Date(a.start) - new Date(b.start));
     const groups = [];
@@ -67,6 +75,7 @@ function groupWeekViewEvents(events) {
     for (let i = 1; i < sorted.length; i++) {
       const start = new Date(sorted[i].start);
       const end = new Date(sorted[i].end);
+      // Include in the current group if it starts within 30 min of the group's furthest end
       if (start <= new Date(maxEnd.getTime() + CLOSE_MS)) {
         group.push(sorted[i]);
         if (end > maxEnd) maxEnd = end;
@@ -78,6 +87,7 @@ function groupWeekViewEvents(events) {
     }
     groups.push(group);
 
+    // Single-event groups pass through; multi-event groups become one combined event
     groups.forEach((g) => {
       if (g.length === 1) {
         result.push(g[0]);
@@ -105,16 +115,18 @@ function groupWeekViewEvents(events) {
 }
 
 function Dashboard() {
+  // ── State ──
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [prefillDate, setPrefillDate] = useState('');
-  const [selectedVisit, setSelectedVisit] = useState(null);
-  const [tooltip, setTooltip] = useState(null);
-  const [currentView, setCurrentView] = useState('dayGridMonth');
-  const tooltipTimeout = useRef(null);
+  const [prefillDate, setPrefillDate] = useState(''); // passed to AddVisitModal when clicking a date
+  const [selectedVisit, setSelectedVisit] = useState(null); // opens VisitDetailModal
+  const [tooltip, setTooltip] = useState(null); // hover tooltip data — null when hidden
+  const [currentView, setCurrentView] = useState('dayGridMonth'); // tracks active calendar view
+  const tooltipTimeout = useRef(null); // delay ref so tooltip stays open when mouse moves onto it
 
+  // ── Data fetching ──
   const fetchVisits = async () => {
     try {
       const res = await fetch(`${BASE_URL}/api/visits`);
@@ -131,6 +143,7 @@ function Dashboard() {
     fetchVisits();
   }, []);
 
+  // ── Date/time helpers ──
   const today = new Date().toISOString().split('T')[0];
 
   const hour = new Date().getHours();
@@ -140,13 +153,14 @@ function Dashboard() {
   });
   const dateShort = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  // Cancelled visits today — strip time portion in case Postgres returns a timestamp
+  // Cancelled visits today — strip the time portion since Postgres may return a full timestamp
   const cancelledToday = visits.filter((v) => {
     const visitDate = v.visit_date ? v.visit_date.split('T')[0] : v.visit_date;
     return v.status === 'cancelled' && visitDate === today;
   });
 
-  // Cancelled visits are excluded from the calendar grid
+  // ── Calendar event mapping ──
+  // Cancelled visits are excluded so they don't appear on the calendar grid
   const calendarEvents = visits
     .filter((v) => v.status !== 'cancelled')
     .map((v) => {
@@ -154,7 +168,7 @@ function Dashboard() {
       const endDate = v.end_date ? v.end_date.split('T')[0] : startDate;
       const isMultiDay = endDate && endDate !== startDate;
 
-      // FullCalendar end is exclusive — add one day for multi-day events
+      // FullCalendar's end date is exclusive, so multi-day events need one extra day added
       let calendarEnd;
       if (isMultiDay) {
         const endDateObj = new Date(endDate + 'T00:00:00');
@@ -178,17 +192,23 @@ function Dashboard() {
           serviceType: v.service_type,
           isMultiDay: Boolean(isMultiDay),
           endDate: v.end_date,
-          visit: v,
+          visit: v, // store the full visit object so modals and tooltips can access all fields
         },
       };
     });
 
+  // Pre-process events for week view — groups close/overlapping visits into single cards
   const weekViewEvents = groupWeekViewEvents(calendarEvents);
 
+  // ── Tooltip handlers ──
   const handleEventMouseEnter = (info) => {
+    // Tooltips only show in week/day views; month view and all-day rows are excluded
     if (info.view.type === 'dayGridMonth') return;
     if (info.event.allDay) return;
+
     clearTimeout(tooltipTimeout.current);
+
+    // Position the tooltip to the right of the event, flipping left if it would overflow
     const rect = info.el.getBoundingClientRect();
     const tooltipWidth = 276;
     let x = rect.right + 12;
@@ -199,6 +219,8 @@ function Dashboard() {
     if (y + 280 > window.innerHeight - 16) {
       y = window.innerHeight - 296;
     }
+
+    // Group events show a list of all their visits; single events show full visit details
     if (info.event.extendedProps.isGroup) {
       setTooltip({ x, y, isGroup: true, groupVisits: info.event.extendedProps.groupVisits });
     } else {
@@ -206,6 +228,7 @@ function Dashboard() {
     }
   };
 
+  // Small delay before hiding so the user can move the mouse onto the tooltip itself
   const handleEventMouseLeave = () => {
     tooltipTimeout.current = setTimeout(() => setTooltip(null), 120);
   };
@@ -219,18 +242,19 @@ function Dashboard() {
     setShowAddModal(true);
   };
 
-  // Clicking an existing event opens the detail modal; group events only show tooltip
+  // Clicking an existing event opens the detail modal; group events only show tooltip on hover
   const handleEventClick = (info) => {
     if (info.event.extendedProps.isGroup) return;
     setSelectedVisit(info.event.extendedProps.visit);
   };
 
-  // ── Stats ──
+  // ── Stats calculations ──
   const todayVisits = visits.filter((v) => {
     const vDate = v.visit_date ? v.visit_date.split('T')[0] : null;
     return vDate === today;
   }).length;
 
+  // Calculate the current week's Monday–Sunday range
   const now = new Date();
   const monday = new Date(now);
   monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
@@ -242,11 +266,12 @@ function Dashboard() {
     return v.status === 'scheduled' && d >= monday && d <= sunday;
   }).length;
 
+  // Count unique caregivers with at least one non-cancelled visit
   const activeCaregivers = new Set(
     visits.filter((v) => v.status !== 'cancelled').map((v) => v.caregiver_id)
   ).size;
 
-  // Previous week for trend badges
+  // Previous week range for the trend badges
   const prevMonday = new Date(monday);
   prevMonday.setDate(monday.getDate() - 7);
   const prevSunday = new Date(prevMonday);
@@ -264,6 +289,7 @@ function Dashboard() {
     }).map((v) => v.caregiver_id)
   ).size;
 
+  // Returns null if there is no previous week data to compare against
   function pctChange(current, previous) {
     if (previous === 0) return null;
     return Math.round(((current - previous) / previous) * 100);
@@ -277,7 +303,7 @@ function Dashboard() {
 
   return (
     <div>
-      {/* Page header */}
+      {/* Page header — greeting + quick-add button */}
       <div className="dash-header">
         <div className="dash-header-left">
           <h1 className="dash-greeting">{greeting}</h1>
@@ -288,7 +314,7 @@ function Dashboard() {
         </button>
       </div>
 
-      {/* Stats row */}
+      {/* Stats row — visits today, this week, and active caregivers */}
       <div className="stats-row">
         <div className="stat-card">
           <div className="stat-icon-wrap">
@@ -369,6 +395,7 @@ function Dashboard() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
+          // Week view uses grouped events; all other views use the standard event list
           events={currentView === 'timeGridWeek' ? weekViewEvents : calendarEvents}
           datesSet={(info) => setCurrentView(info.view.type)}
           eventBackgroundColor="#2d3f8e"
@@ -384,7 +411,7 @@ function Dashboard() {
           eventContent={(arg) => {
             const isMonthView = arg.view.type === 'dayGridMonth';
 
-            // Month view — same style for all events including multi-day
+            // Month view — compact bar with caregiver name and time range
             if (isMonthView) {
               const v = arg.event.extendedProps.visit;
               const timeStr = v ? `${formatTime(v.start_time)} – ${formatTime(v.end_time)}` : '';
@@ -437,7 +464,7 @@ function Dashboard() {
               );
             }
 
-            // All-day row (multi-day visits in week/day view)
+            // All-day row — used for multi-day visits in week/day view
             if (arg.event.allDay) {
               return (
                 <div style={{ padding: '2px 6px', overflow: 'hidden' }}>
@@ -480,7 +507,7 @@ function Dashboard() {
               );
             }
 
-            // Week view grouped events — show count + top caregiver names
+            // Week view grouped event — shows visit count and up to 2 caregiver names
             if (arg.event.extendedProps.isGroup) {
               const { count, groupVisits } = arg.event.extendedProps;
               return (
@@ -506,6 +533,7 @@ function Dashboard() {
                       {v.caregiver_name}
                     </div>
                   ))}
+                  {/* Show overflow count if there are more than 2 caregivers in the group */}
                   {groupVisits.length > 2 && (
                     <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#9090a0' }}>
                       +{groupVisits.length - 2} more
@@ -515,13 +543,13 @@ function Dashboard() {
               );
             }
 
-            // Week / Day view — compact for short events (≤2 hrs), full for longer
+            // Week / Day view — use a compact layout for short events (≤2 hrs)
             const durationMs = arg.event.end && arg.event.start
               ? arg.event.end - arg.event.start
               : 0;
             const isShort = durationMs > 0 && durationMs <= 2 * 60 * 60 * 1000;
 
-            // Week / Day — shared card style: light navy tint + left border
+            // Shared card style: light navy tint with a left border accent
             const cardStyle = {
               background: 'rgba(45, 63, 142, 0.08)',
               borderLeft: '3px solid #2d3f8e',
@@ -535,6 +563,7 @@ function Dashboard() {
               boxSizing: 'border-box',
             };
 
+            // Short event — just caregiver name and time on one line
             if (isShort) {
               return (
                 <div style={{ ...cardStyle, padding: '3px 7px', justifyContent: 'center' }}>
@@ -562,6 +591,7 @@ function Dashboard() {
               );
             }
 
+            // Longer event — full card with time, caregiver, client, and service type
             return (
               <div style={{ ...cardStyle, padding: '6px 8px', gap: '2px' }}>
                 <div style={{
@@ -615,6 +645,7 @@ function Dashboard() {
         />
       </div>
 
+      {/* Add Visit modal */}
       {showAddModal && (
         <AddVisitModal
           onClose={() => { setShowAddModal(false); setPrefillDate(''); }}
@@ -623,6 +654,7 @@ function Dashboard() {
         />
       )}
 
+      {/* Visit Detail modal */}
       {selectedVisit && (
         <VisitDetailModal
           visit={selectedVisit}
@@ -631,6 +663,7 @@ function Dashboard() {
         />
       )}
 
+      {/* Hover tooltip — renders outside the calendar so it isn't clipped by overflow */}
       {tooltip && (
         <div
           className="visit-tooltip"
@@ -639,6 +672,7 @@ function Dashboard() {
           onMouseLeave={handleTooltipMouseLeave}
         >
           {tooltip.isGroup ? (
+            // Group tooltip — lists each visit with caregiver, client, and service
             <>
               <p className="visit-tooltip-time">{tooltip.groupVisits.length} Visits</p>
               {tooltip.groupVisits.map((v, i) => (
@@ -659,6 +693,7 @@ function Dashboard() {
               ))}
             </>
           ) : (
+            // Single visit tooltip — full details with a link to open the detail modal
             <>
               <p className="visit-tooltip-time">
                 {formatTime(tooltip.visit.start_time)} – {formatTime(tooltip.visit.end_time)}
