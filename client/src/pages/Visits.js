@@ -107,6 +107,9 @@ function Visits() {
             <div key={date} className="visits-group">
               {grouped[date].map((visit) => {
                 const { day, month } = formatDate(visit.visit_date);
+                const endFormatted = visit.end_date && visit.end_date !== visit.visit_date
+                  ? formatDate(visit.end_date)
+                  : null;
                 return (
                   <div
                     key={visit.id}
@@ -116,10 +119,18 @@ function Visits() {
                     <div className="visit-date-block">
                       <span className="visit-day">{day}</span>
                       <span className="visit-month">{month}</span>
+                      {endFormatted && (
+                        <div className="visit-date-range">
+                          → {endFormatted.day} {endFormatted.month}
+                        </div>
+                      )}
                     </div>
                     <div className="visit-info">
                       <p className="visit-caregiver">{visit.caregiver_name}</p>
                       <p className="visit-client">{visit.client_name}</p>
+                      {visit.service_type && (
+                        <div className="visit-service-tag">{visit.service_type}</div>
+                      )}
                       <p className="visit-time">
                         {formatTime(visit.start_time)} – {formatTime(visit.end_time)}
                       </p>

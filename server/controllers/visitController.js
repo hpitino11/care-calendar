@@ -7,10 +7,12 @@ const getAllVisits = async (req, res, next) => {
       SELECT
         v.id,
         v.visit_date,
+        v.end_date,
         v.start_time,
         v.end_time,
         v.status,
         v.notes,
+        v.service_type,
         v.created_at,
         v.caregiver_id,
         v.client_id,
@@ -28,7 +30,7 @@ const getAllVisits = async (req, res, next) => {
 };
 
 const createVisit = async (req, res, next) => {
-  const { caregiver_id, client_id, visit_date, start_time, end_time, status, notes } = req.body;
+  const { caregiver_id, client_id, visit_date, end_date, start_time, end_time, status, notes, service_type } = req.body;
 
   if (!caregiver_id || !client_id || !visit_date || !start_time || !end_time) {
     return res.status(400).json({
@@ -38,10 +40,10 @@ const createVisit = async (req, res, next) => {
 
   try {
     const result = await pool.query(
-      `INSERT INTO visits (caregiver_id, client_id, visit_date, start_time, end_time, status, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO visits (caregiver_id, client_id, visit_date, end_date, start_time, end_time, status, notes, service_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
-      [caregiver_id, client_id, visit_date, start_time, end_time, status || 'scheduled', notes || null]
+      [caregiver_id, client_id, visit_date, end_date || visit_date, start_time, end_time, status || 'scheduled', notes || null, service_type || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

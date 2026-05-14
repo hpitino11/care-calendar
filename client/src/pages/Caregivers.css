@@ -265,3 +265,35 @@
 .btn-cancel:hover {
   color: #f14e4b;
 }
+
+/* ── Multi-day toggle ── */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3a54a4;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #f14e4b;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  border-radius: 3px;
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+/* ── Inline field error ── */
+.field-error {
+  font-size: 12px;
+  color: #f14e4b;
+  margin-top: 6px;
+  font-weight: 600;
+}

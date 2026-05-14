@@ -64,19 +64,38 @@ function Dashboard() {
   // Cancelled visits are excluded from the calendar grid
   const calendarEvents = visits
     .filter((v) => v.status !== 'cancelled')
-    .map((v) => ({
-      id: String(v.id),
-      title: v.caregiver_name,
-      start: `${v.visit_date?.slice(0, 10)}T${v.start_time}`,
-      end:   `${v.visit_date?.slice(0, 10)}T${v.end_time}`,
-      backgroundColor: STATUS_COLORS[v.status] || STATUS_COLORS.scheduled,
-      borderColor: 'transparent',
-      extendedProps: {
-        caregiverName: v.caregiver_name,
-        clientName: v.client_name,
-        visit: v,
-      },
-    }));
+    .map((v) => {
+      const startDate = v.visit_date?.slice(0, 10);
+      const endDate = v.end_date ? v.end_date.slice(0, 10) : startDate;
+      const isMultiDay = endDate !== startDate;
+
+      // FullCalendar end is exclusive, so add one day for multi-day events
+      let calendarEnd;
+      if (isMultiDay) {
+        const endDateObj = new Date(endDate);
+        endDateObj.setDate(endDateObj.getDate() + 1);
+        calendarEnd = endDateObj.toISOString().split('T')[0];
+      } else {
+        calendarEnd = `${startDate}T${v.end_time}`;
+      }
+
+      return {
+        id: String(v.id),
+        title: v.caregiver_name,
+        start: `${startDate}T${v.start_time}`,
+        end: calendarEnd,
+        backgroundColor: STATUS_COLORS[v.status] || STATUS_COLORS.scheduled,
+        borderColor: 'transparent',
+        extendedProps: {
+          caregiverName: v.caregiver_name,
+          clientName: v.client_name,
+          serviceType: v.service_type,
+          isMultiDay,
+          endDate: v.end_date,
+          visit: v,
+        },
+      };
+    });
 
   // Clicking an empty date slot pre-fills the date in the add modal
   const handleDateClick = (info) => {
@@ -227,6 +246,22 @@ function Dashboard() {
                     marginTop: '1px',
                   }}>
                     {arg.event.extendedProps.clientName}
+                  </div>
+                )}
+                {!isMonthView && arg.event.extendedProps.serviceType && (
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '10px',
+                    color: 'rgba(248, 168, 167, 0.9)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    marginTop: '2px',
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                  }}>
+                    {arg.event.extendedProps.serviceType}
                   </div>
                 )}
               </div>

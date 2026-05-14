@@ -98,6 +98,14 @@
   letter-spacing: 0.08em;
 }
 
+.visit-date-range {
+  font-size: 10px;
+  font-weight: 700;
+  color: #f14e4b;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
 /* ── Center info ── */
 .visit-info {
   flex: 1;
@@ -158,6 +166,22 @@
   color: #ffffff;
 }
 
+/* ── Service type tag ── */
+.visit-service-tag {
+  display: inline-block;
+  font-family: 'Spartan', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #3a54a4;
+  background: rgba(58, 84, 164, 0.08);
+  border: 1px solid rgba(58, 84, 164, 0.15);
+  border-radius: 20px;
+  padding: 2px 10px;
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 /* ── Visit detail modal ── */
 .visit-detail {
   display: flex;
@@ -166,9 +190,16 @@
   margin-bottom: 8px;
 }
 
-.visit-detail p {
+.visit-detail p,
+.visit-detail .detail-field {
   font-size: 14px;
   color: #4a4a6a;
+}
+
+.detail-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .detail-label {

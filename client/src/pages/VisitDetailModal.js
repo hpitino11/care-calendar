@@ -38,7 +38,21 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
       <div className="visit-detail">
         <p><span className="detail-label">Caregiver</span> {visit.caregiver_name || '—'}</p>
         <p><span className="detail-label">Client</span> {visit.client_name || '—'}</p>
-        <p><span className="detail-label">Date</span> {visit.visit_date?.slice(0, 10)}</p>
+        {visit.service_type && (
+          <div className="detail-field">
+            <span className="detail-label">Service</span>
+            <span className="visit-service-tag">{visit.service_type}</span>
+          </div>
+        )}
+        <div className="detail-field">
+          <span className="detail-label">Date</span>
+          <span>
+            {visit.visit_date?.slice(0, 10)}
+            {visit.end_date && visit.end_date !== visit.visit_date && (
+              <span style={{ color: '#f14e4b' }}> → {visit.end_date?.slice(0, 10)}</span>
+            )}
+          </span>
+        </div>
         <p><span className="detail-label">Time</span> {visit.start_time} – {visit.end_time}</p>
         {visit.notes && <p><span className="detail-label">Notes</span> {visit.notes}</p>}
       </div>
