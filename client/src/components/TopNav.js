@@ -70,10 +70,6 @@ function TopNav() {
 
   return (
     <header className="topnav">
-      <div className="topnav-brand">
-        <img src="/logo_nav.png" alt="Care Calendar" className="topnav-logo-img" />
-      </div>
-
       <div className="topnav-search" ref={searchRef}>
         <div className="topnav-search-box">
           <svg className="topnav-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -135,9 +131,15 @@ function TopNav() {
       <div className="topnav-right">
         <span className="topnav-date">{today}</span>
 
+        <button className="topnav-icon-btn" aria-label="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+
         <div className="topnav-user">
           <div className="topnav-avatar">A</div>
-          <span className="topnav-user-name">Admin</span>
         </div>
       </div>
     </header>

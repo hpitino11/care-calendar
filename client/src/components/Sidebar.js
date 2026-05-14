@@ -31,8 +31,7 @@ const navItems = [
     label: 'Caregivers',
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
     ),
   },
@@ -53,6 +52,11 @@ const navItems = [
 function Sidebar() {
   return (
     <aside className="sidebar">
+      <div className="sidebar-logo">
+        <span className="sidebar-logo-text">Care</span>
+        <span className="sidebar-logo-heart">♥</span>
+        <span className="sidebar-logo-text">Calendar</span>
+      </div>
       <nav className="sidebar-nav">
         {navItems.map((item) => (
           <NavLink
