@@ -8,7 +8,7 @@ An admin dashboard for managing home care visits, caregivers, and clients. Built
 
 ## Overview
 
-Care Calendar gives administrators a centralized view of a caregiving operation - who is working, who they are caring for, and when. The dashboard surfaces key stats at a glance and provides a full interactive calendar for scheduling and reviewing visits across month, week, and day views.
+Care Calendar gives administrators a centralized view of a caregiving operation: who is working, who they are caring for, and when. The dashboard surfaces key stats at a glance and provides a full interactive calendar for scheduling and reviewing visits across month, week, and day views.
 
 ---
 
