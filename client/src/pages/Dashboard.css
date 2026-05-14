@@ -291,8 +291,8 @@
 }
 
 .fc-timeGridDay-view .fc-col-header-cell {
-  background: #fef5f5 !important;
-  border-bottom: 2px solid rgba(248, 168, 167, 0.4) !important;
+  background: #eef2ff !important;
+  border-bottom: 2px solid rgba(138, 169, 215, 0.4) !important;
   padding: 0.75rem 0 !important;
 }
 
@@ -321,7 +321,7 @@
 
 /* ── Fix 7 — Week view today column subtle tint ── */
 .fc-timeGridWeek-view .fc-day-today {
-  background: rgba(241, 78, 75, 0.04) !important;
+  background: rgba(58, 84, 164, 0.06) !important;
 }
 
 .fc-timeGridWeek-view .fc-timegrid-slot {
@@ -329,11 +329,11 @@
 }
 
 .fc-timeGridWeek-view .fc-col-header-cell.fc-day-today {
-  background: rgba(241, 78, 75, 0.06) !important;
+  background: rgba(58, 84, 164, 0.12) !important;
 }
 
 .fc-timeGridWeek-view .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
-  color: #f14e4b !important;
+  color: #2d3f8e !important;
 }
 
 /* ── Visit hover tooltip ── */
