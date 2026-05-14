@@ -21,7 +21,7 @@
 
 .page-subtitle {
   font-size: 0.8125rem;
-  color: #9090a0;
+  color: #6b6b7c;
   margin-top: 0.1875rem;
   font-weight: 400;
 }
@@ -61,7 +61,7 @@
 .search-icon-inline {
   position: absolute;
   left: 0.75rem;
-  color: #9090a0;
+  color: #6b6b7c;
   pointer-events: none;
   flex-shrink: 0;
 }
@@ -86,7 +86,7 @@
 }
 
 .search-input::placeholder {
-  color: #b0b0be;
+  color: #6b6b7c;
 }
 
 /* ── Caregiver list ── */
@@ -154,7 +154,7 @@
 
 .caregiver-detail svg {
   flex-shrink: 0;
-  color: #9090a0;
+  color: #6b6b7c;
 }
 
 /* ── Card action buttons ── */
@@ -263,7 +263,7 @@
   width: 100%;
   background: none;
   border: none;
-  color: #9090a0;
+  color: #6b6b7c;
   font-size: 0.8125rem;
   font-family: inherit;
   padding: 0.625rem;

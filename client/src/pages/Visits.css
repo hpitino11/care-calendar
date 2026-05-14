@@ -93,7 +93,7 @@
 
 .visit-month {
   font-size: 0.625rem;
-  color: #9090a0;
+  color: #6b6b7c;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -133,7 +133,7 @@
 
 .visit-time {
   font-size: 0.75rem;
-  color: #9090a0;
+  color: #6b6b7c;
   margin-top: 0.25rem;
 }
 
@@ -166,7 +166,7 @@
 
 .status-badge--completed {
   background: #e8e8e8;
-  color: #9090a0;
+  color: #4a4a6a;
 }
 
 .status-badge--cancelled {

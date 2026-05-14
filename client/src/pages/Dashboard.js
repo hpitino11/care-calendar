@@ -531,11 +531,13 @@ function Dashboard() {
                   {groupVisits.slice(0, 2).map((v, i) => (
                     <div key={i} style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {v.caregiver_name}
+                      <span style={{ color: '#6b6b7c', margin: '0 3px' }}>·</span>
+                      {formatTime(v.start_time)} – {formatTime(v.end_time)}
                     </div>
                   ))}
                   {/* Show overflow count if there are more than 2 caregivers in the group */}
                   {groupVisits.length > 2 && (
-                    <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#9090a0' }}>
+                    <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#6b6b7c' }}>
                       +{groupVisits.length - 2} more
                     </div>
                   )}
@@ -568,27 +570,43 @@ function Dashboard() {
                 }}>
                   {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
                 </div>
-                <div style={{
-                  fontFamily: 'Spartan, sans-serif',
-                  fontWeight: 700,
-                  fontSize: '12px',
-                  color: '#1a1a2e',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}>
-                  {arg.event.extendedProps.caregiverName}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                  {/* Caregiver: user-plus icon */}
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/>
+                    <line x1="22" y1="11" x2="16" y2="11"/>
+                  </svg>
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '12px',
+                    color: '#1a1a2e',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {arg.event.extendedProps.caregiverName}
+                  </div>
                 </div>
-                <div style={{
-                  fontFamily: 'Spartan, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '11px',
-                  color: '#4a4a6a',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}>
-                  {arg.event.extendedProps.clientName}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                  {/* Client: plain user icon */}
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '11px',
+                    color: '#4a4a6a',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {arg.event.extendedProps.clientName}
+                  </div>
                 </div>
                 {arg.event.extendedProps.serviceType && (
                   <div style={{
