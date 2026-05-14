@@ -543,13 +543,7 @@ function Dashboard() {
               );
             }
 
-            // Week / Day view — use a compact layout for short events (≤2 hrs)
-            const durationMs = arg.event.end && arg.event.start
-              ? arg.event.end - arg.event.start
-              : 0;
-            const isShort = durationMs > 0 && durationMs <= 2 * 60 * 60 * 1000;
-
-            // Shared card style: light navy tint with a left border accent
+            // Week / Day view — full card with time, caregiver, client, and service type
             const cardStyle = {
               background: 'rgba(45, 63, 142, 0.08)',
               borderLeft: '3px solid #2d3f8e',
@@ -563,35 +557,6 @@ function Dashboard() {
               boxSizing: 'border-box',
             };
 
-            // Short event — just caregiver name and time on one line
-            if (isShort) {
-              return (
-                <div style={{ ...cardStyle, padding: '3px 7px', justifyContent: 'center' }}>
-                  <div style={{
-                    fontFamily: 'Spartan, sans-serif',
-                    fontWeight: 700,
-                    fontSize: '11px',
-                    color: '#1a1a2e',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {arg.event.extendedProps.caregiverName}
-                  </div>
-                  <div style={{
-                    fontFamily: 'Spartan, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '10px',
-                    color: '#6a6a8a',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
-                  </div>
-                </div>
-              );
-            }
-
-            // Longer event — full card with time, caregiver, client, and service type
             return (
               <div style={{ ...cardStyle, padding: '6px 8px', gap: '2px' }}>
                 <div style={{
