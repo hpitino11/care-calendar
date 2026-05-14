@@ -27,6 +27,28 @@ const createCaregiver = async (req, res, next) => {
   }
 };
 
+const updateCaregiver = async (req, res, next) => {
+  const { id } = req.params;
+  const { name, email, phone } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: 'name is required' });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE caregivers SET name = $1, email = $2, phone = $3 WHERE id = $4 RETURNING *',
+      [name, email, phone, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Caregiver not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const deleteCaregiver = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -43,4 +65,4 @@ const deleteCaregiver = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllCaregivers, createCaregiver, deleteCaregiver };
+module.exports = { getAllCaregivers, createCaregiver, updateCaregiver, deleteCaregiver };

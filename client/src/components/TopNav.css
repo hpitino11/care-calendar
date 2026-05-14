@@ -3,30 +3,111 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #f8a8a7;
-  box-shadow: 0 2px 12px rgba(241, 78, 75, 0.08);
+  height: 60px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(248, 168, 167, 0.4);
+  box-shadow: 0 1px 20px rgba(58, 84, 164, 0.06);
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  justify-content: space-between;
+  padding: 0;
   z-index: 100;
 }
 
-.topnav-logo {
+/* ── Brand area — matches sidebar width ── */
+.topnav-brand {
+  width: 240px;
+  flex-shrink: 0;
+  height: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
+  border-right: 1px solid rgba(248, 168, 167, 0.3);
 }
 
 .topnav-logo-text {
   font-weight: 700;
-  font-size: 22px;
+  font-size: 18px;
   color: #3a54a4;
   letter-spacing: -0.02em;
 }
 
 .topnav-heart {
   color: #f14e4b;
-  font-size: 16px;
+  font-size: 14px;
+}
+
+/* ── Right controls ── */
+.topnav-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.topnav-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9090a0;
+  letter-spacing: 0.01em;
+}
+
+.topnav-icon-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(138, 169, 215, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+  color: #4a4a6a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.topnav-icon-btn:hover {
+  background: #fef5f5;
+  border-color: #f8a8a7;
+  color: #f14e4b;
+}
+
+/* Unread dot */
+.topnav-badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f14e4b;
+  border: 1.5px solid #ffffff;
+}
+
+.topnav-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3a54a4 0%, #2d4190 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(58, 84, 164, 0.25);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.topnav-avatar:hover {
+  box-shadow: 0 4px 12px rgba(58, 84, 164, 0.35);
+  transform: translateY(-1px);
 }

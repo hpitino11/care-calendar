@@ -39,7 +39,7 @@ body::before {
   left: -200px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(241, 78, 75, 0.35) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(241, 78, 75, 0.42) 0%, transparent 60%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -54,7 +54,7 @@ body::after {
   right: -150px;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(138, 169, 215, 0.40) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(138, 169, 215, 0.48) 0%, transparent 60%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -87,7 +87,7 @@ body::after {
   right: -100px;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(138, 169, 215, 0.38) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(138, 169, 215, 0.45) 0%, transparent 60%);
   animation: blobFloat3 18s ease-in-out infinite;
 }
 
@@ -96,7 +96,7 @@ body::after {
   left: 200px;
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, rgba(241, 78, 75, 0.28) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(241, 78, 75, 0.35) 0%, transparent 60%);
   animation: blobFloat4 22s ease-in-out infinite;
 }
 
@@ -183,9 +183,11 @@ button {
 }
 
 .fc-toolbar-title {
-  font-size: 18px !important;
+  font-family: 'Spartan', sans-serif !important;
+  font-size: 20px !important;
   font-weight: 700 !important;
   color: #1a1a2e !important;
+  letter-spacing: -0.02em !important;
 }
 
 .fc .fc-button {
@@ -226,11 +228,11 @@ button {
   font-family: 'Spartan', sans-serif !important;
   font-weight: 700 !important;
   font-size: 11px !important;
-  color: #9090a0 !important;
-  letter-spacing: 0.08em !important;
+  color: #3a54a4 !important;
+  letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
-  padding: 10px 0 !important;
-  text-decoration: none;
+  text-decoration: none !important;
+  padding: 12px 0 !important;
 }
 
 .fc .fc-daygrid-day.fc-day-today {
@@ -248,12 +250,16 @@ button {
 }
 
 .fc .fc-scrollgrid {
-  border-color: #f8a8a7 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
 }
 
+.fc .fc-scrollgrid-sync-table td,
+.fc .fc-scrollgrid-sync-table th,
 .fc .fc-scrollgrid td,
 .fc .fc-scrollgrid th {
-  border-color: rgba(248, 168, 167, 0.4) !important;
+  border-color: rgba(138, 169, 215, 0.2) !important;
 }
 
 .fc-event {
@@ -266,8 +272,50 @@ button {
 }
 
 .fc .fc-daygrid-day-number {
-  color: var(--text-dark);
+  font-family: 'Spartan', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: #4a4a6a !important;
   text-decoration: none;
+  padding: 6px 10px !important;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+  background: #f14e4b !important;
+  color: #ffffff !important;
+  border-radius: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 4px !important;
+}
+
+.fc .fc-day-today {
+  background: rgba(241, 78, 75, 0.06) !important;
+}
+
+.fc .fc-day-other .fc-daygrid-day-number {
+  color: #c8c8d8 !important;
+}
+
+.fc .fc-day-other {
+  background: rgba(248, 248, 252, 0.5) !important;
+}
+
+.fc-daygrid-event {
+  border-radius: 20px !important;
+  padding: 2px 8px !important;
+  margin: 1px 4px !important;
+  border: none !important;
+  font-size: 11px !important;
+  background-color: rgba(58, 84, 164, 0.1) !important;
+}
+
+.fc-daygrid-event-dot {
+  display: none !important;
 }
 
 /* Space out prev/next arrows */
@@ -279,6 +327,35 @@ button {
 .fc-prev-button,
 .fc-next-button {
   margin: 0 !important;
+}
+
+/* View switcher button group */
+.fc-button-group {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.fc-button-group .fc-button {
+  border-radius: 8px !important;
+  padding: 6px 16px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em !important;
+  background: #ffffff !important;
+  color: #3a54a4 !important;
+  border: 1.5px solid #8aa9d7 !important;
+}
+
+.fc-button-group .fc-button:hover {
+  background: #fef5f5 !important;
+  border-color: #f14e4b !important;
+  color: #f14e4b !important;
+}
+
+.fc-button-group .fc-button-active {
+  background: #f14e4b !important;
+  color: #ffffff !important;
+  border-color: #f14e4b !important;
 }
 
 /* Thin gap between overlapping time grid events */

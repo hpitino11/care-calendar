@@ -10,6 +10,8 @@ function Clients() {
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState('');
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [editingClient, setEditingClient] = useState(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' });
 
   const fetchClients = async () => {
     try {
@@ -57,6 +59,30 @@ function Clients() {
     }
   };
 
+  const handleEditClick = (client) => {
+    setEditingClient(client);
+    setEditForm({ name: client.name, email: client.email || '', phone: client.phone || '' });
+  };
+
+  const handleEditChange = (e) => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await fetch(`${BASE_URL}/api/clients/${editingClient.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      setEditingClient(null);
+      fetchClients();
+    } catch (err) {
+      alert('Something went wrong. Please try again.');
+    }
+  };
+
   const filtered = clients.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -97,10 +123,10 @@ function Clients() {
               {cl.phone && (
                 <p className="caregiver-detail">📞 {cl.phone}</p>
               )}
-              <button
-                className="btn-delete"
-                onClick={() => handleDelete(cl.id)}
-              >
+              <button className="card-edit" onClick={() => handleEditClick(cl)}>
+                Edit
+              </button>
+              <button className="btn-delete" onClick={() => handleDelete(cl.id)}>
                 Delete
               </button>
             </div>
@@ -108,6 +134,7 @@ function Clients() {
         </div>
       )}
 
+      {/* Add modal */}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <h2 className="modal-title">Add Client</h2>
@@ -143,11 +170,51 @@ function Clients() {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Add Client</button>
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={() => setShowModal(false)}
-              >
+              <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit modal */}
+      {editingClient && (
+        <Modal onClose={() => setEditingClient(null)}>
+          <h2 className="modal-title">Edit Client</h2>
+          <form onSubmit={handleEditSubmit} className="form">
+            <div className="form-group">
+              <label>Name *</label>
+              <input
+                name="name"
+                value={editForm.name}
+                onChange={handleEditChange}
+                required
+                placeholder="Full name"
+              />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                name="email"
+                type="email"
+                value={editForm.email}
+                onChange={handleEditChange}
+                placeholder="email@example.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>Phone</label>
+              <input
+                name="phone"
+                value={editForm.phone}
+                onChange={handleEditChange}
+                placeholder="(555) 000-0000"
+              />
+            </div>
+            <div className="form-actions">
+              <button type="submit" className="btn-submit">Save Changes</button>
+              <button type="button" className="btn-cancel" onClick={() => setEditingClient(null)}>
                 Cancel
               </button>
             </div>

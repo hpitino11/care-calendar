@@ -1,8 +1,8 @@
 .main-content {
   margin-left: 240px;
-  margin-top: 64px;
-  padding: 32px;
-  min-height: calc(100vh - 64px);
+  margin-top: 60px;
+  padding: 24px;
+  min-height: calc(100vh - 60px);
   overflow-x: hidden;
   position: relative;
   z-index: 1;

@@ -10,6 +10,8 @@ function Caregivers() {
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState('');
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [editingCaregiver, setEditingCaregiver] = useState(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' });
 
   const fetchCaregivers = async () => {
     try {
@@ -57,6 +59,30 @@ function Caregivers() {
     }
   };
 
+  const handleEditClick = (caregiver) => {
+    setEditingCaregiver(caregiver);
+    setEditForm({ name: caregiver.name, email: caregiver.email || '', phone: caregiver.phone || '' });
+  };
+
+  const handleEditChange = (e) => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await fetch(`${BASE_URL}/api/caregivers/${editingCaregiver.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      setEditingCaregiver(null);
+      fetchCaregivers();
+    } catch (err) {
+      alert('Something went wrong. Please try again.');
+    }
+  };
+
   const filtered = caregivers.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -97,10 +123,10 @@ function Caregivers() {
               {cg.phone && (
                 <p className="caregiver-detail">📞 {cg.phone}</p>
               )}
-              <button
-                className="btn-delete"
-                onClick={() => handleDelete(cg.id)}
-              >
+              <button className="card-edit" onClick={() => handleEditClick(cg)}>
+                Edit
+              </button>
+              <button className="btn-delete" onClick={() => handleDelete(cg.id)}>
                 Delete
               </button>
             </div>
@@ -108,6 +134,7 @@ function Caregivers() {
         </div>
       )}
 
+      {/* Add modal */}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <h2 className="modal-title">Add Caregiver</h2>
@@ -143,11 +170,51 @@ function Caregivers() {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Add Caregiver</button>
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={() => setShowModal(false)}
-              >
+              <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit modal */}
+      {editingCaregiver && (
+        <Modal onClose={() => setEditingCaregiver(null)}>
+          <h2 className="modal-title">Edit Caregiver</h2>
+          <form onSubmit={handleEditSubmit} className="form">
+            <div className="form-group">
+              <label>Name *</label>
+              <input
+                name="name"
+                value={editForm.name}
+                onChange={handleEditChange}
+                required
+                placeholder="Full name"
+              />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                name="email"
+                type="email"
+                value={editForm.email}
+                onChange={handleEditChange}
+                placeholder="email@example.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>Phone</label>
+              <input
+                name="phone"
+                value={editForm.phone}
+                onChange={handleEditChange}
+                placeholder="(555) 000-0000"
+              />
+            </div>
+            <div className="form-actions">
+              <button type="submit" className="btn-submit">Save Changes</button>
+              <button type="button" className="btn-cancel" onClick={() => setEditingCaregiver(null)}>
                 Cancel
               </button>
             </div>

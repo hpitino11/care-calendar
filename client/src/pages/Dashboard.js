@@ -49,6 +49,13 @@ function Dashboard() {
 
   const today = new Date().toISOString().slice(0, 10);
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dateLabel = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric',
+  });
+  const dateShort = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
   // Cancelled visits today — shown in the bar above the calendar
   const cancelledToday = visits.filter(
     (v) => v.status === 'cancelled' && v.visit_date?.slice(0, 10) === today
@@ -105,22 +112,63 @@ function Dashboard() {
 
   return (
     <div>
+      {/* Page header */}
+      <div className="dash-header">
+        <div className="dash-header-left">
+          <h1 className="dash-greeting">{greeting}</h1>
+          <p className="dash-date">{dateLabel}</p>
+        </div>
+        <button className="btn-new-visit" onClick={() => setShowAddModal(true)}>
+          + New Visit
+        </button>
+      </div>
+
       {/* Stats row */}
       <div className="stats-row">
         <div className="stat-card">
-          <span className="stat-icon">📅</span>
-          <p className="stat-number">{todayVisits}</p>
-          <p className="stat-label">Visits today</p>
+          <div className="stat-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div className="stat-body">
+            <p className="stat-number">{todayVisits}</p>
+            <p className="stat-label">Visits Today</p>
+            <p className="stat-sub">Scheduled for {dateShort}</p>
+          </div>
         </div>
+
         <div className="stat-card">
-          <span className="stat-icon">📋</span>
-          <p className="stat-number">{weekScheduled}</p>
-          <p className="stat-label">Scheduled this week</p>
+          <div className="stat-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div className="stat-body">
+            <p className="stat-number">{weekScheduled}</p>
+            <p className="stat-label">This Week</p>
+            <p className="stat-sub">Scheduled visits</p>
+          </div>
         </div>
+
         <div className="stat-card">
-          <span className="stat-icon">👥</span>
-          <p className="stat-number">{activeCaregivers}</p>
-          <p className="stat-label">Caregivers active</p>
+          <div className="stat-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div className="stat-body">
+            <p className="stat-number">{activeCaregivers}</p>
+            <p className="stat-label">Active Caregivers</p>
+            <p className="stat-sub">With scheduled visits</p>
+          </div>
         </div>
       </div>
 
@@ -160,7 +208,7 @@ function Dashboard() {
                   fontFamily: 'Spartan, sans-serif',
                   fontWeight: 700,
                   fontSize: isMonthView ? '11px' : '12px',
-                  color: '#8aa9d7',
+                  color: isMonthView ? '#3a54a4' : '#ffffff',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
