@@ -3,11 +3,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .dash-greeting {
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   color: #1a1a2e;
   letter-spacing: -0.02em;
@@ -15,9 +15,9 @@
 }
 
 .dash-date {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #9090a0;
-  margin-top: 3px;
+  margin-top: 0.1875rem;
   font-weight: 400;
 }
 
@@ -25,9 +25,9 @@
   background: #f14e4b;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 13px;
+  border-radius: 0.625rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   font-family: 'Spartan', sans-serif;
   cursor: pointer;
@@ -46,22 +46,22 @@
 /* ── Stats row ── */
 .stats-row {
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .stat-card {
   background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 20px;
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
+  border-radius: 1rem;
+  padding: 1.25rem;
   box-shadow: 0 2px 20px rgba(58, 84, 164, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.85);
   flex: 1;
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 0.875rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -71,9 +71,9 @@
 }
 
 .stat-icon-wrap {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: 0.75rem;
   background: rgba(58, 84, 164, 0.08);
   display: flex;
   align-items: center;
@@ -88,7 +88,7 @@
 }
 
 .stat-number {
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 700;
   color: #2d3f8e;
   line-height: 1;
@@ -96,29 +96,29 @@
 }
 
 .stat-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: #3a54a4;
-  margin-top: 5px;
+  margin-top: 0.3125rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
 .stat-sub {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #9090a0;
-  margin-top: 3px;
+  margin-top: 0.1875rem;
   font-weight: 400;
 }
 
 /* ── Stat change badge ── */
 .stat-change {
   display: inline-block;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
-  padding: 3px 9px;
-  border-radius: 20px;
-  margin-top: 6px;
+  padding: 0.1875rem 0.5625rem;
+  border-radius: 1.25rem;
+  margin-top: 0.375rem;
   letter-spacing: 0.02em;
 }
 
@@ -135,27 +135,27 @@
 /* ── Cancelled bar ── */
 .cancelled-bar {
   background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
   border: 1px solid rgba(248, 168, 167, 0.3);
   border-left: 3px solid #f14e4b;
-  border-radius: 10px;
-  padding: 12px 16px;
+  border-radius: 0.625rem;
+  padding: 0.75rem 1rem;
   box-shadow: 0 2px 12px rgba(241, 78, 75, 0.07);
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .cancelled-bar-title {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: #f14e4b;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 6px;
+  margin-bottom: 0.375rem;
 }
 
 .cancelled-bar-item {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #9090a0;
   line-height: 1.6;
 }
@@ -163,41 +163,53 @@
 /* ── Calendar wrapper ── */
 .calendar-wrapper {
   background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 20px;
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
+  border-radius: 1.25rem;
   box-shadow: 0 4px 32px rgba(58, 84, 164, 0.09);
   border: 1px solid rgba(255, 255, 255, 0.85);
-  padding: 20px;
+  padding: 1.25rem;
 }
 
 /* ── Fix 1 — Time grid event blocks ── */
 .fc-timegrid-event {
-  border-radius: 10px !important;
+  border-radius: 0.625rem !important;
   border: none !important;
   box-shadow: 0 2px 8px rgba(45, 63, 142, 0.25) !important;
 }
 
-/* ── Fix 2 — All-day / multi-day event blocks ── */
-.fc-daygrid-event {
-  border-radius: 8px !important;
-  border: none !important;
-  padding: 4px 8px !important;
-  box-shadow: 0 1px 4px rgba(45, 63, 142, 0.2) !important;
-}
-
-.fc-h-event {
+/* ── Fix 2 — All event blocks: solid navy, no border ── */
+.fc-h-event,
+.fc-daygrid-event,
+.fc-daygrid-block-event,
+.fc-event {
   background: #2d3f8e !important;
   border: none !important;
-  border-radius: 8px !important;
+  border-color: transparent !important;
+}
+
+.fc-daygrid-event {
+  border-radius: 0.375rem !important;
+  box-shadow: 0 1px 4px rgba(45, 63, 142, 0.2) !important;
 }
 
 .fc-daygrid-block-event .fc-event-title {
   font-family: 'Spartan', sans-serif !important;
   font-weight: 700 !important;
-  font-size: 11px !important;
+  font-size: 0.6875rem !important;
   color: #ffffff !important;
   padding: 2px 0 !important;
+}
+
+/* ── Month view — compact bars with gap below date number ── */
+.fc-dayGridMonth-view .fc-daygrid-event {
+  padding: 0.0625rem 0.3125rem !important;
+  margin: 0 0.125rem 0.125rem !important;
+  border-radius: 0.3125rem !important;
+}
+
+.fc-daygrid-day-events {
+  margin-top: 0.625rem !important;
 }
 
 /* ── Fix 4 — Active view button (Month / Week / Day) ── */
@@ -215,32 +227,43 @@
 }
 
 /* ── Fix 5 — Prev / Next navigation arrows ── */
-.fc-prev-button,
-.fc-next-button {
+.fc .fc-prev-button,
+.fc .fc-next-button,
+.fc .fc-prev-button.fc-button,
+.fc .fc-next-button.fc-button {
   background: #ffffff !important;
   border: 1.5px solid #8aa9d7 !important;
   color: #3a54a4 !important;
-  border-radius: 8px !important;
-  width: 36px !important;
-  height: 36px !important;
-  display: flex !important;
+  border-radius: 0.5rem !important;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: all 0.2s ease !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
   padding: 0 !important;
+  box-shadow: none !important;
 }
 
-.fc-prev-button:hover,
-.fc-next-button:hover {
+.fc .fc-prev-button:hover,
+.fc .fc-next-button:hover,
+.fc .fc-prev-button.fc-button:hover,
+.fc .fc-next-button.fc-button:hover {
   background: #2d3f8e !important;
   border-color: #2d3f8e !important;
   color: #ffffff !important;
 }
 
-.fc-prev-button .fc-icon,
-.fc-next-button .fc-icon {
+.fc .fc-prev-button:focus,
+.fc .fc-next-button:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.fc .fc-prev-button .fc-icon,
+.fc .fc-next-button .fc-icon {
   color: inherit !important;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
 }
 
 /* ── Fix 6 — Day view clean white background ── */
@@ -255,17 +278,17 @@
 .fc-timeGridDay-view .fc-col-header-cell {
   background: #fef5f5 !important;
   border-bottom: 2px solid rgba(248, 168, 167, 0.4) !important;
-  padding: 12px 0 !important;
+  padding: 0.75rem 0 !important;
 }
 
 .fc-timeGridDay-view .fc-timegrid-slot {
   border-color: rgba(138, 169, 215, 0.15) !important;
-  height: 40px !important;
+  height: 2.5rem !important;
 }
 
 .fc-timeGridDay-view .fc-timegrid-slot-label {
   font-family: 'Spartan', sans-serif !important;
-  font-size: 11px !important;
+  font-size: 0.6875rem !important;
   color: #9090a0 !important;
   font-weight: 400 !important;
 }

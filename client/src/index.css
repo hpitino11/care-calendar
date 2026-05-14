@@ -1,19 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Spartan:wght@400;700&display=swap');
 
 :root {
-  --red:        #f14e4b;
-  --navy:       #3a54a4;
-  --blue-light: #8aa9d7;
-  --pink:       #f8a8a7;
-  --cream:      #fef5f5;
-  --white:      #ffffff;
-  --text-dark:  #1a1a2e;
-  --text-mid:   #4a4a6a;
-  --text-light: #9090a0;
-  --shadow:     rgba(58, 84, 164, 0.08);
+  --red:           #f14e4b;
+  --navy:          #3a54a4;
+  --blue-light:    #8aa9d7;
+  --pink:          #f8a8a7;
+  --cream:         #fef5f5;
+  --white:         #ffffff;
+  --text-dark:     #1a1a2e;
+  --text-mid:      #4a4a6a;
+  --text-light:    #9090a0;
+  --shadow:        rgba(58, 84, 164, 0.08);
+
+  /* Layout dimensions — shared by Sidebar, TopNav, and Layout */
+  --nav-height:     3.75rem;   /* 60px */
+  --sidebar-width:  15rem;     /* 240px */
 }
 
 html {
+  font-size: 100%; /* 1rem = browser base (16px default) — scales with user settings */
   scroll-behavior: smooth;
 }
 
@@ -35,43 +40,43 @@ body {
 body::before {
   content: '';
   position: fixed;
-  top: -200px;
-  left: -200px;
-  width: 600px;
-  height: 600px;
+  top: -12.5rem;
+  left: -12.5rem;
+  width: 37.5rem;
+  height: 37.5rem;
   background: radial-gradient(circle, rgba(241, 78, 75, 0.42) 0%, transparent 60%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(70px);
+  filter: blur(4.375rem);
   animation: blobFloat1 20s ease-in-out infinite;
 }
 
 body::after {
   content: '';
   position: fixed;
-  bottom: -150px;
-  right: -150px;
-  width: 500px;
-  height: 500px;
+  bottom: -9.375rem;
+  right: -9.375rem;
+  width: 31.25rem;
+  height: 31.25rem;
   background: radial-gradient(circle, rgba(138, 169, 215, 0.48) 0%, transparent 60%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(70px);
+  filter: blur(4.375rem);
   animation: blobFloat2 25s ease-in-out infinite;
 }
 
 @keyframes blobFloat1 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(80px, 60px) scale(1.1); }
-  66%       { transform: translate(-40px, 80px) scale(0.95); }
+  33%       { transform: translate(5rem, 3.75rem) scale(1.1); }
+  66%       { transform: translate(-2.5rem, 5rem) scale(0.95); }
 }
 
 @keyframes blobFloat2 {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(-60px, -80px) scale(1.05); }
-  66%       { transform: translate(80px, -40px) scale(1.1); }
+  33%       { transform: translate(-3.75rem, -5rem) scale(1.05); }
+  66%       { transform: translate(5rem, -2.5rem) scale(1.1); }
 }
 
 .blob {
@@ -79,35 +84,35 @@ body::after {
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(70px);
+  filter: blur(4.375rem);
 }
 
 .blob-top-right {
-  top: 100px;
-  right: -100px;
-  width: 400px;
-  height: 400px;
+  top: 6.25rem;
+  right: -6.25rem;
+  width: 25rem;
+  height: 25rem;
   background: radial-gradient(circle, rgba(138, 169, 215, 0.45) 0%, transparent 60%);
   animation: blobFloat3 18s ease-in-out infinite;
 }
 
 .blob-bottom-left {
-  bottom: 100px;
-  left: 200px;
-  width: 350px;
-  height: 350px;
+  bottom: 6.25rem;
+  left: 12.5rem;
+  width: 21.875rem;
+  height: 21.875rem;
   background: radial-gradient(circle, rgba(241, 78, 75, 0.35) 0%, transparent 60%);
   animation: blobFloat4 22s ease-in-out infinite;
 }
 
 @keyframes blobFloat3 {
   0%, 100% { transform: translate(0, 0); }
-  50%       { transform: translate(-60px, 60px); }
+  50%       { transform: translate(-3.75rem, 3.75rem); }
 }
 
 @keyframes blobFloat4 {
   0%, 100% { transform: translate(0, 0); }
-  50%       { transform: translate(60px, -40px); }
+  50%       { transform: translate(3.75rem, -2.5rem); }
 }
 
 /* ── Inputs ── */
@@ -115,9 +120,9 @@ input,
 select,
 textarea {
   border: 1.5px solid var(--blue-light);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
   font-family: 'Spartan', sans-serif;
   width: 100%;
   background: var(--white);
@@ -142,9 +147,9 @@ textarea::placeholder {
 label {
   display: block;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--navy);
-  margin-bottom: 6px;
+  margin-bottom: 0.375rem;
 }
 
 /* ── Buttons ── */
@@ -159,22 +164,22 @@ button {
 .state-loading {
   text-align: center;
   color: var(--text-light);
-  margin-top: 60px;
-  font-size: 15px;
+  margin-top: 3.75rem;
+  font-size: 0.9375rem;
 }
 
 .state-error {
   text-align: center;
   color: var(--red);
-  margin-top: 60px;
-  font-size: 15px;
+  margin-top: 3.75rem;
+  font-size: 0.9375rem;
 }
 
 .state-empty {
   text-align: center;
   color: var(--text-light);
-  margin-top: 60px;
-  font-size: 15px;
+  margin-top: 3.75rem;
+  font-size: 0.9375rem;
 }
 
 /* ── FullCalendar overrides ── */
@@ -184,7 +189,7 @@ button {
 
 .fc-toolbar-title {
   font-family: 'Spartan', sans-serif !important;
-  font-size: 20px !important;
+  font-size: 1.25rem !important;
   font-weight: 700 !important;
   color: #1a1a2e !important;
   letter-spacing: -0.02em !important;
@@ -195,9 +200,9 @@ button {
   border: none !important;
   font-family: 'Spartan', sans-serif !important;
   font-weight: 700 !important;
-  font-size: 12px !important;
-  border-radius: 6px !important;
-  padding: 6px 14px !important;
+  font-size: 0.75rem !important;
+  border-radius: 0.375rem !important;
+  padding: 0.375rem 0.875rem !important;
   text-transform: capitalize !important;
   box-shadow: none !important;
 }
@@ -227,12 +232,12 @@ button {
 .fc .fc-col-header-cell-cushion {
   font-family: 'Spartan', sans-serif !important;
   font-weight: 700 !important;
-  font-size: 11px !important;
+  font-size: 0.6875rem !important;
   color: #3a54a4 !important;
   letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
   text-decoration: none !important;
-  padding: 12px 0 !important;
+  padding: 0.75rem 0 !important;
 }
 
 .fc .fc-daygrid-day.fc-day-today {
@@ -244,14 +249,14 @@ button {
 }
 
 .fc .fc-timegrid-slot-label-cushion {
-  font-size: 11px !important;
+  font-size: 0.6875rem !important;
   color: #9090a0 !important;
   font-family: 'Spartan', sans-serif !important;
 }
 
 .fc .fc-scrollgrid {
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: 0.75rem !important;
   overflow: hidden !important;
 }
 
@@ -264,9 +269,9 @@ button {
 
 .fc-event {
   border: none !important;
-  border-radius: 6px !important;
-  padding: 2px 6px !important;
-  font-size: 12px !important;
+  border-radius: 0.375rem !important;
+  padding: 0.125rem 0.375rem !important;
+  font-size: 0.75rem !important;
   font-family: 'Spartan', sans-serif !important;
   font-weight: 700 !important;
 }
@@ -274,23 +279,23 @@ button {
 .fc .fc-daygrid-day-number {
   font-family: 'Spartan', sans-serif !important;
   font-weight: 700 !important;
-  font-size: 13px !important;
+  font-size: 0.8125rem !important;
   color: #4a4a6a !important;
   text-decoration: none;
-  padding: 6px 10px !important;
+  padding: 0.375rem 0.625rem !important;
 }
 
 .fc .fc-day-today .fc-daygrid-day-number {
   background: #f14e4b !important;
   color: #ffffff !important;
   border-radius: 50% !important;
-  width: 28px !important;
-  height: 28px !important;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
-  margin: 4px !important;
+  margin: 0.25rem !important;
 }
 
 .fc .fc-day-today {
@@ -306,11 +311,11 @@ button {
 }
 
 .fc-daygrid-event {
-  border-radius: 20px !important;
-  padding: 2px 8px !important;
-  margin: 1px 4px !important;
+  border-radius: 1.25rem !important;
+  padding: 0.125rem 0.5rem !important;
+  margin: 0.0625rem 0.25rem !important;
   border: none !important;
-  font-size: 11px !important;
+  font-size: 0.6875rem !important;
   background-color: rgba(58, 84, 164, 0.1) !important;
 }
 
@@ -321,7 +326,7 @@ button {
 /* Space out prev/next arrows */
 .fc-toolbar-chunk:first-child {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .fc-prev-button,
@@ -332,14 +337,14 @@ button {
 /* View switcher button group */
 .fc-button-group {
   display: flex !important;
-  gap: 6px !important;
+  gap: 0.375rem !important;
 }
 
 .fc-button-group .fc-button {
-  border-radius: 8px !important;
-  padding: 6px 16px !important;
+  border-radius: 0.5rem !important;
+  padding: 0.375rem 1rem !important;
   font-weight: 700 !important;
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
   letter-spacing: 0.04em !important;
   background: #ffffff !important;
   color: #3a54a4 !important;

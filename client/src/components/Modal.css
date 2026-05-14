@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: rgba(26, 26, 46, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(0.25rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,27 +11,27 @@
 
 .modal-card {
   background: #ffffff;
-  border-radius: 20px;
-  padding: 36px;
+  border-radius: 1.25rem;
+  padding: 2.25rem;
   width: 90%;
-  max-width: 480px;
+  max-width: 30rem;
   position: relative;
-  box-shadow: 0 20px 60px rgba(26, 26, 46, 0.2);
+  box-shadow: 0 1.25rem 3.75rem rgba(26, 26, 46, 0.2);
   animation: modalFadeIn 0.2s ease;
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(0.75rem); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .modal-close {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  top: 1rem;
+  right: 1.25rem;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 1.25rem;
   color: #9090a0;
   cursor: pointer;
   transition: color 0.15s;

@@ -10,8 +10,8 @@ import './Dashboard.css';
 
 const STATUS_COLORS = {
   scheduled:   '#2d3f8e',
-  in_progress: '#c17a5a',
-  completed:   '#6b7280',
+  in_progress: '#2d3f8e',
+  completed:   '#2d3f8e',
 };
 
 const formatEventTime = (date) => {
@@ -264,6 +264,9 @@ function Dashboard() {
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
           events={calendarEvents}
+          eventBackgroundColor="#2d3f8e"
+          eventBorderColor="transparent"
+          eventDisplay="block"
           dateClick={handleDateClick}
           eventClick={handleEventClick}
           eventMaxStack={3}
@@ -271,6 +274,59 @@ function Dashboard() {
           eventMinHeight={40}
           eventContent={(arg) => {
             const isMonthView = arg.view.type === 'dayGridMonth';
+
+            // Month view — same style for all events including multi-day
+            if (isMonthView) {
+              const v = arg.event.extendedProps.visit;
+              const timeStr = v ? `${formatTime(v.start_time)} – ${formatTime(v.end_time)}` : '';
+              return (
+                <div style={{
+                  padding: '2px 6px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  minWidth: 0,
+                }}>
+                  <span style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '11px',
+                    color: '#ffffff',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    flexShrink: 0,
+                    maxWidth: timeStr ? '55%' : '100%',
+                  }}>
+                    {arg.event.extendedProps.caregiverName}
+                  </span>
+                  {timeStr && (
+                    <>
+                      <span style={{
+                        fontFamily: 'Spartan, sans-serif',
+                        fontWeight: 400,
+                        fontSize: '11px',
+                        color: 'rgba(255,255,255,0.6)',
+                        flexShrink: 0,
+                      }}>·</span>
+                      <span style={{
+                        fontFamily: 'Spartan, sans-serif',
+                        fontWeight: 400,
+                        fontSize: '10px',
+                        color: 'rgba(255,255,255,0.7)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        minWidth: 0,
+                      }}>
+                        {timeStr}
+                      </span>
+                    </>
+                  )}
+                </div>
+              );
+            }
 
             // All-day row (multi-day visits in week/day view)
             if (arg.event.allDay) {
@@ -315,14 +371,19 @@ function Dashboard() {
               );
             }
 
-            // Month view — compact single-line dot chip
-            if (isMonthView) {
+            // Week / Day view — compact for short events (≤2 hrs), full for longer
+            const durationMs = arg.event.end && arg.event.start
+              ? arg.event.end - arg.event.start
+              : 0;
+            const isShort = durationMs > 0 && durationMs <= 2 * 60 * 60 * 1000;
+
+            if (isShort) {
               return (
-                <div style={{ padding: '2px 4px', overflow: 'hidden' }}>
+                <div style={{ padding: '4px 8px', overflow: 'hidden' }}>
                   <div style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 700,
-                    fontSize: '11px',
+                    fontSize: '12px',
                     color: '#ffffff',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -330,11 +391,20 @@ function Dashboard() {
                   }}>
                     {arg.event.extendedProps.caregiverName}
                   </div>
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '10px',
+                    color: 'rgba(255,255,255,0.7)',
+                    letterSpacing: '0.02em',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {formatEventTime(arg.event.start)} - {formatEventTime(arg.event.end)}
+                  </div>
                 </div>
               );
             }
 
-            // Week / Day view — full info block
             return (
               <div style={{
                 padding: '6px 8px',

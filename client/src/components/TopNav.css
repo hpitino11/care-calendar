@@ -3,41 +3,37 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: var(--nav-height);
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(1rem);
+  -webkit-backdrop-filter: blur(1rem);
   border-bottom: 1px solid rgba(248, 168, 167, 0.4);
-  box-shadow: 0 1px 20px rgba(58, 84, 164, 0.06);
+  box-shadow: 0 1px 1.25rem rgba(58, 84, 164, 0.06);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0;
   z-index: 100;
+  overflow: visible;
 }
 
 /* ── Brand area — matches sidebar width ── */
 .topnav-brand {
-  width: 240px;
+  width: var(--sidebar-width);
   flex-shrink: 0;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  border-right: 1px solid rgba(248, 168, 167, 0.3);
+  gap: 0.375rem;
+  overflow: visible;
 }
 
-.topnav-logo-text {
-  font-weight: 700;
-  font-size: 18px;
-  color: #3a54a4;
-  letter-spacing: -0.02em;
-}
-
-.topnav-heart {
-  color: #f14e4b;
-  font-size: 14px;
+.topnav-logo-img {
+  height: 5rem;
+  width: auto;
+  object-fit: contain;
+  padding-left: 1rem;
 }
 
 /* ── Search bar ── */
@@ -45,65 +41,66 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  padding: 0 24px;
+  padding: 0 1.5rem;
 }
 
 .topnav-search-box {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 26.25rem;
 }
 
 .topnav-search-icon {
   position: absolute;
-  left: 11px;
+  left: 0.6875rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #9090a0;
+  color: #3a54a4;
   pointer-events: none;
 }
 
 .topnav-search-input {
   width: 100%;
-  height: 36px;
-  padding: 0 12px 0 34px;
-  border-radius: 8px;
-  border: 1.5px solid rgba(138, 169, 215, 0.4);
-  background: rgba(250, 247, 244, 0.8);
-  font-family: inherit;
-  font-size: 13px;
+  height: 2.25rem;
+  padding: 0 0.75rem 0 2.125rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #3a54a4;
+  background: #ffffff;
+  font-family: 'Spartan', sans-serif;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: #2d1f1a;
+  color: #1a1a2e;
   outline: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
   box-sizing: border-box;
 }
 
 .topnav-search-input::placeholder {
-  color: #b0b0be;
+  color: #9090a0;
+  font-family: 'Spartan', sans-serif;
 }
 
 .topnav-search-input:focus {
-  border-color: #3a54a4;
-  background: #ffffff;
+  border-color: #2d3f8e;
+  box-shadow: 0 0 0 3px rgba(45, 63, 142, 0.1);
 }
 
 .topnav-search-dropdown {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 0.375rem);
   left: 0;
   right: 0;
   background: #ffffff;
   border: 1px solid rgba(138, 169, 215, 0.3);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(58, 84, 164, 0.12);
+  border-radius: 0.625rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(58, 84, 164, 0.12);
   z-index: 200;
   overflow: hidden;
-  padding: 6px 0;
+  padding: 0.375rem 0;
 }
 
 .search-group {
-  padding: 4px 0;
+  padding: 0.25rem 0;
 }
 
 .search-group + .search-group {
@@ -111,12 +108,12 @@
 }
 
 .search-group-label {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #9090a0;
-  padding: 6px 14px 4px;
+  padding: 0.375rem 0.875rem 0.25rem;
   margin: 0;
 }
 
@@ -124,8 +121,8 @@
   width: 100%;
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  padding: 7px 14px;
+  gap: 0.5rem;
+  padding: 0.4375rem 0.875rem;
   background: none;
   border: none;
   cursor: pointer;
@@ -138,20 +135,20 @@
 }
 
 .search-result-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #2d1f1a;
 }
 
 .search-result-sub {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #9090a0;
 }
 
 .search-empty {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #9090a0;
-  padding: 12px 14px;
+  padding: 0.75rem 0.875rem;
   margin: 0;
 }
 
@@ -159,13 +156,13 @@
 .topnav-right {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 20px;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
   flex-shrink: 0;
 }
 
 .topnav-date {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: #9090a0;
   letter-spacing: 0.01em;
@@ -173,9 +170,9 @@
 
 .topnav-icon-btn {
   position: relative;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
   border: 1.5px solid rgba(138, 169, 215, 0.4);
   background: rgba(255, 255, 255, 0.7);
   color: #4a4a6a;
@@ -195,10 +192,10 @@
 /* Unread dot */
 .topnav-badge {
   position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 7px;
-  height: 7px;
+  top: 0.4375rem;
+  right: 0.4375rem;
+  width: 0.4375rem;
+  height: 0.4375rem;
   border-radius: 50%;
   background: #f14e4b;
   border: 1.5px solid #ffffff;
@@ -208,17 +205,17 @@
 .topnav-user {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   cursor: pointer;
 }
 
 .topnav-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
   background: linear-gradient(135deg, #3a54a4 0%, #2d4190 100%);
   color: #ffffff;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -234,7 +231,7 @@
 }
 
 .topnav-user-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #2d1f1a;
   white-space: nowrap;

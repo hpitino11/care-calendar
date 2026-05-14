@@ -93,42 +93,74 @@ function Clients() {
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Clients</h1>
+        <div>
+          <h1 className="page-title">Clients</h1>
+          <p className="page-subtitle">Manage your clients</p>
+        </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
-          Add Client
+          + Add Client
         </button>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search clients..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="search-input"
-      />
+      <div className="search-wrap">
+        <svg className="search-icon-inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search clients..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
+      </div>
 
       {filtered.length === 0 ? (
         <p className="state-empty">No clients found.</p>
       ) : (
-        <div className="card-grid">
+        <div className="caregiver-list">
           {filtered.map((cl) => (
             <div key={cl.id} className="caregiver-card">
               <div className="caregiver-avatar">
                 {cl.name.charAt(0).toUpperCase()}
               </div>
-              <h2 className="caregiver-name">{cl.name}</h2>
-              {cl.email && (
-                <p className="caregiver-detail">✉ {cl.email}</p>
-              )}
-              {cl.phone && (
-                <p className="caregiver-detail">📞 {cl.phone}</p>
-              )}
-              <button className="card-edit" onClick={() => handleEditClick(cl)}>
-                Edit
-              </button>
-              <button className="btn-delete" onClick={() => handleDelete(cl.id)}>
-                Delete
-              </button>
+              <div className="caregiver-info">
+                <h2 className="caregiver-name">{cl.name}</h2>
+                {cl.email && (
+                  <p className="caregiver-detail">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    {cl.email}
+                  </p>
+                )}
+                {cl.phone && (
+                  <p className="caregiver-detail">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    {cl.phone}
+                  </p>
+                )}
+                <div className="caregiver-actions">
+                  <button className="card-edit" onClick={() => handleEditClick(cl)}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
+                  <button className="btn-delete" onClick={() => handleDelete(cl.id)}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
