@@ -47,7 +47,7 @@ function Dashboard() {
     fetchVisits();
   }, []);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().split('T')[0];
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -56,23 +56,24 @@ function Dashboard() {
   });
   const dateShort = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  // Cancelled visits today — shown in the bar above the calendar
-  const cancelledToday = visits.filter(
-    (v) => v.status === 'cancelled' && v.visit_date?.slice(0, 10) === today
-  );
+  // Cancelled visits today — strip time portion in case Postgres returns a timestamp
+  const cancelledToday = visits.filter((v) => {
+    const visitDate = v.visit_date ? v.visit_date.split('T')[0] : v.visit_date;
+    return v.status === 'cancelled' && visitDate === today;
+  });
 
   // Cancelled visits are excluded from the calendar grid
   const calendarEvents = visits
     .filter((v) => v.status !== 'cancelled')
     .map((v) => {
-      const startDate = v.visit_date?.slice(0, 10);
-      const endDate = v.end_date ? v.end_date.slice(0, 10) : startDate;
-      const isMultiDay = endDate !== startDate;
+      const startDate = v.visit_date ? v.visit_date.split('T')[0] : v.visit_date;
+      const endDate = v.end_date ? v.end_date.split('T')[0] : startDate;
+      const isMultiDay = endDate && endDate !== startDate;
 
-      // FullCalendar end is exclusive, so add one day for multi-day events
+      // FullCalendar end is exclusive — add one day for multi-day events
       let calendarEnd;
       if (isMultiDay) {
-        const endDateObj = new Date(endDate);
+        const endDateObj = new Date(endDate + 'T00:00:00');
         endDateObj.setDate(endDateObj.getDate() + 1);
         calendarEnd = endDateObj.toISOString().split('T')[0];
       } else {
@@ -82,15 +83,16 @@ function Dashboard() {
       return {
         id: String(v.id),
         title: v.caregiver_name,
-        start: `${startDate}T${v.start_time}`,
+        start: isMultiDay ? startDate : `${startDate}T${v.start_time}`,
         end: calendarEnd,
+        allDay: Boolean(isMultiDay),
         backgroundColor: STATUS_COLORS[v.status] || STATUS_COLORS.scheduled,
         borderColor: 'transparent',
         extendedProps: {
           caregiverName: v.caregiver_name,
           clientName: v.client_name,
           serviceType: v.service_type,
-          isMultiDay,
+          isMultiDay: Boolean(isMultiDay),
           endDate: v.end_date,
           visit: v,
         },
@@ -109,7 +111,10 @@ function Dashboard() {
   };
 
   // ── Stats ──
-  const todayVisits = visits.filter((v) => v.visit_date?.slice(0, 10) === today).length;
+  const todayVisits = visits.filter((v) => {
+    const vDate = v.visit_date ? v.visit_date.split('T')[0] : null;
+    return vDate === today;
+  }).length;
 
   const now = new Date();
   const monday = new Date(now);

@@ -266,6 +266,26 @@
   color: #f14e4b;
 }
 
+/* ── Edit Visit button ── */
+.btn-edit-visit {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1.5px solid #3a54a4;
+  border-radius: 8px;
+  color: #3a54a4;
+  font-family: 'Spartan', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-visit:hover {
+  background: #3a54a4;
+  color: #ffffff;
+}
+
 /* ── Multi-day toggle ── */
 .toggle-label {
   display: flex;

@@ -91,4 +91,26 @@ const deleteVisit = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllVisits, createVisit, updateVisitStatus, deleteVisit };
+const updateVisit = async (req, res, next) => {
+  const { id } = req.params;
+  const { caregiver_id, client_id, visit_date, end_date, start_time, end_time, status, notes, service_type } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE visits
+       SET caregiver_id = $1, client_id = $2, visit_date = $3, end_date = $4,
+           start_time = $5, end_time = $6, status = $7, notes = $8, service_type = $9
+       WHERE id = $10
+       RETURNING *`,
+      [caregiver_id, client_id, visit_date, end_date || visit_date, start_time, end_time, status, notes || null, service_type || null, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Visit not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { getAllVisits, createVisit, updateVisit, updateVisitStatus, deleteVisit };

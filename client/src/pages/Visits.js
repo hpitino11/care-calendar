@@ -6,11 +6,11 @@ import './Visits.css';
 
 const STATUS_FILTERS = ['All', 'scheduled', 'completed', 'cancelled'];
 
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
+function formatShortDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
   return {
-    day: date.getUTCDate(),
-    month: date.toLocaleString('default', { month: 'short', timeZone: 'UTC' }),
+    day: d.getDate(),
+    month: d.toLocaleString('default', { month: 'short' }).toUpperCase(),
   };
 }
 
@@ -61,7 +61,7 @@ function Visits() {
 
   // Group visits by date for the agenda-style list
   const grouped = filtered.reduce((acc, visit) => {
-    const date = visit.visit_date?.slice(0, 10);
+    const date = visit.visit_date ? visit.visit_date.split('T')[0] : visit.visit_date;
     if (!acc[date]) acc[date] = [];
     acc[date].push(visit);
     return acc;
@@ -106,10 +106,11 @@ function Visits() {
           {Object.keys(grouped).sort().map((date) => (
             <div key={date} className="visits-group">
               {grouped[date].map((visit) => {
-                const { day, month } = formatDate(visit.visit_date);
-                const endFormatted = visit.end_date && visit.end_date !== visit.visit_date
-                  ? formatDate(visit.end_date)
-                  : null;
+                const startDate = visit.visit_date ? visit.visit_date.split('T')[0] : visit.visit_date;
+                const endDate = visit.end_date ? visit.end_date.split('T')[0] : null;
+                const isMultiDay = endDate && endDate !== startDate;
+                const start = formatShortDate(startDate);
+                const end = isMultiDay ? formatShortDate(endDate) : null;
                 return (
                   <div
                     key={visit.id}
@@ -117,12 +118,21 @@ function Visits() {
                     onClick={() => setSelectedVisit(visit)}
                   >
                     <div className="visit-date-block">
-                      <span className="visit-day">{day}</span>
-                      <span className="visit-month">{month}</span>
-                      {endFormatted && (
-                        <div className="visit-date-range">
-                          → {endFormatted.day} {endFormatted.month}
-                        </div>
+                      {isMultiDay ? (
+                        <>
+                          <div className="visit-day" style={{ fontSize: '14px' }}>
+                            {start.month} {start.day}
+                          </div>
+                          <div className="visit-date-arrow">→</div>
+                          <div className="visit-day" style={{ fontSize: '14px' }}>
+                            {end.month} {end.day}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="visit-day">{start.day}</div>
+                          <div className="visit-month">{start.month}</div>
+                        </>
                       )}
                     </div>
                     <div className="visit-info">
