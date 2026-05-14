@@ -33,15 +33,15 @@
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(241, 78, 75, 0.3);
+  box-shadow: 0 0.125rem 0.5rem rgba(241, 78, 75, 0.3);
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .btn-primary:hover {
   background: #d94340;
-  box-shadow: 0 4px 12px rgba(241, 78, 75, 0.4);
-  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.75rem rgba(241, 78, 75, 0.4);
+  transform: translateY(-0.0625rem);
 }
 
 /* ── Search bar with icon ── */
@@ -78,7 +78,7 @@
 
 .search-input:focus {
   border-color: #3a54a4;
-  box-shadow: 0 0 0 3px rgba(58, 84, 164, 0.08);
+  box-shadow: 0 0 0 0.1875rem rgba(58, 84, 164, 0.08);
 }
 
 .search-input::placeholder {
@@ -98,7 +98,7 @@
   background: #ffffff;
   border-radius: 0.875rem;
   padding: 1.125rem 1.25rem;
-  box-shadow: 0 2px 12px rgba(58, 84, 164, 0.07);
+  box-shadow: 0 0.125rem 0.75rem rgba(58, 84, 164, 0.07);
   border: 1px solid rgba(230, 230, 240, 0.8);
   display: flex;
   align-items: flex-start;
@@ -107,7 +107,7 @@
 }
 
 .caregiver-card:hover {
-  box-shadow: 0 4px 20px rgba(58, 84, 164, 0.12);
+  box-shadow: 0 0.25rem 1.25rem rgba(58, 84, 164, 0.12);
   border-color: rgba(248, 168, 167, 0.4);
 }
 

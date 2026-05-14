@@ -210,8 +210,9 @@ function Dashboard() {
 
     // Position the tooltip to the right of the event, flipping left if it would overflow
     const rect = info.el.getBoundingClientRect();
-    const tooltipWidth = 276;
-    const sidebarWidth = 256; // sidebar (240px) + gap
+    const tooltipWidth = 276; // matches .visit-tooltip width (17.25rem * 16)
+    const sidebarEl = document.querySelector('.sidebar');
+    const sidebarWidth = (sidebarEl?.getBoundingClientRect().width ?? 240) + 16;
     let x = rect.right + 12;
     if (x + tooltipWidth > window.innerWidth - 16) {
       x = rect.left - tooltipWidth - 12;
@@ -433,32 +434,32 @@ function Dashboard() {
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '3px 8px 3px 4px',
+                  gap: '0.375rem',
+                  padding: '0.1875rem 0.5rem 0.1875rem 0.25rem',
                   width: '100%',
                   overflow: 'hidden',
                 }}>
                   <div style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '1.25rem',
+                    height: '1.25rem',
                     borderRadius: '50%',
                     background: '#2d3f8e',
                     color: '#ffffff',
-                    fontSize: '9px',
+                    fontSize: '0.5625rem',
                     fontWeight: 700,
                     fontFamily: 'Spartan, sans-serif',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                    boxShadow: '0 0.0625rem 0.1875rem rgba(0,0,0,0.15)',
                   }}>
                     {initials}
                   </div>
                   <span style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 700,
-                    fontSize: '11px',
+                    fontSize: '0.6875rem',
                     color: '#1a2f6e',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -473,21 +474,21 @@ function Dashboard() {
             // All-day row — used for multi-day visits in week/day view
             if (arg.event.allDay) {
               return (
-                <div style={{ padding: '3px 8px 3px 4px', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
+                <div style={{ padding: '0.1875rem 0.5rem 0.1875rem 0.25rem', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '0.375rem', width: '100%' }}>
                   <div style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '1.25rem',
+                    height: '1.25rem',
                     borderRadius: '50%',
                     background: '#2d3f8e',
                     color: '#ffffff',
-                    fontSize: '9px',
+                    fontSize: '0.5625rem',
                     fontWeight: 700,
                     fontFamily: 'Spartan, sans-serif',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                    boxShadow: '0 0.0625rem 0.1875rem rgba(0,0,0,0.15)',
                   }}>
                     {arg.event.extendedProps.caregiverName
                       ? arg.event.extendedProps.caregiverName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
@@ -497,7 +498,7 @@ function Dashboard() {
                     <div style={{
                       fontFamily: 'Spartan, sans-serif',
                       fontWeight: 700,
-                      fontSize: '11px',
+                      fontSize: '0.6875rem',
                       color: '#1a2f6e',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
@@ -509,7 +510,7 @@ function Dashboard() {
                       <div style={{
                         fontFamily: 'Spartan, sans-serif',
                         fontWeight: 400,
-                        fontSize: '10px',
+                        fontSize: '0.625rem',
                         color: '#484858',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -529,7 +530,7 @@ function Dashboard() {
               return (
                 <div style={{
                   background: 'rgba(45, 63, 142, 0.13)',
-                  borderLeft: '3px solid #2d3f8e',
+                  borderLeft: '0.1875rem solid #2d3f8e',
                   borderRadius: '0 0.5rem 0.5rem 0',
                   height: '100%',
                   width: '100%',
@@ -538,22 +539,22 @@ function Dashboard() {
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
                   boxSizing: 'border-box',
-                  padding: '6px 8px',
-                  gap: '2px',
+                  padding: '0.375rem 0.5rem',
+                  gap: '0.125rem',
                 }}>
-                  <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 700, fontSize: '12px', color: '#1a1a2e' }}>
+                  <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 700, fontSize: '0.75rem', color: '#1a1a2e' }}>
                     {count} Visits
                   </div>
                   {groupVisits.slice(0, 2).map((v, i) => (
-                    <div key={i} style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div key={i} style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '0.625rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {v.caregiver_name}
-                      <span style={{ color: '#484858', margin: '0 3px' }}>·</span>
+                      <span style={{ color: '#484858', margin: '0 0.1875rem' }}>·</span>
                       {formatTime(v.start_time)} – {formatTime(v.end_time)}
                     </div>
                   ))}
                   {/* Show overflow count if there are more than 2 caregivers in the group */}
                   {groupVisits.length > 2 && (
-                    <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#484858' }}>
+                    <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '0.625rem', color: '#484858' }}>
                       +{groupVisits.length - 2} more
                     </div>
                   )}
@@ -564,7 +565,7 @@ function Dashboard() {
             // Week / Day view — full card with time, caregiver, client, and service type
             const cardStyle = {
               background: 'rgba(45, 63, 142, 0.08)',
-              borderLeft: '3px solid #2d3f8e',
+              borderLeft: '0.1875rem solid #2d3f8e',
               borderRadius: '0 0.5rem 0.5rem 0',
               height: '100%',
               width: '100%',
@@ -576,17 +577,17 @@ function Dashboard() {
             };
 
             return (
-              <div style={{ ...cardStyle, padding: '6px 8px', gap: '2px' }}>
+              <div style={{ ...cardStyle, padding: '0.375rem 0.5rem', gap: '0.125rem' }}>
                 <div style={{
                   fontFamily: 'Spartan, sans-serif',
                   fontWeight: 400,
-                  fontSize: '10px',
+                  fontSize: '0.625rem',
                   color: '#484858',
                   letterSpacing: '0.02em',
                 }}>
                   {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
                   {/* Caregiver: user-plus icon */}
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -597,7 +598,7 @@ function Dashboard() {
                   <div style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 700,
-                    fontSize: '12px',
+                    fontSize: '0.75rem',
                     color: '#1a1a2e',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -606,7 +607,7 @@ function Dashboard() {
                     {arg.event.extendedProps.caregiverName}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
                   {/* Client: plain user icon */}
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -615,7 +616,7 @@ function Dashboard() {
                   <div style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 400,
-                    fontSize: '11px',
+                    fontSize: '0.6875rem',
                     color: '#4a4a6a',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -628,11 +629,11 @@ function Dashboard() {
                   <div style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 700,
-                    fontSize: '9px',
+                    fontSize: '0.5625rem',
                     color: '#2d3f8e',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
-                    marginTop: '2px',
+                    marginTop: '0.125rem',
                   }}>
                     {arg.event.extendedProps.serviceType}
                   </div>

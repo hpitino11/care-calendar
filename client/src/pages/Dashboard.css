@@ -26,24 +26,24 @@
   background: linear-gradient(135deg, #f14e4b 0%, #e8353f 100%);
   color: #ffffff;
   border: none;
-  border-radius: 50px;
-  padding: 12px 24px;
+  border-radius: 3.125rem;
+  padding: 0.75rem 1.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
   font-family: 'Spartan', sans-serif;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(241, 78, 75, 0.35);
+  box-shadow: 0 0.25rem 1rem rgba(241, 78, 75, 0.35);
   transition: all 0.2s ease;
   white-space: nowrap;
   letter-spacing: 0.02em;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .btn-new-visit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(241, 78, 75, 0.45);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.5rem rgba(241, 78, 75, 0.45);
 }
 
 /* ── Stats row ── */
@@ -55,12 +55,12 @@
 
 .stat-card {
   background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(1.25rem);
+  -webkit-backdrop-filter: blur(1.25rem);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 20px;
-  padding: 24px 28px;
-  box-shadow: 0 4px 24px rgba(58, 84, 164, 0.08);
+  border-radius: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 0.25rem 1.5rem rgba(58, 84, 164, 0.08);
   flex: 1;
   display: flex;
   align-items: flex-start;
@@ -71,14 +71,14 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(58, 84, 164, 0.12);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 2rem rgba(58, 84, 164, 0.12);
 }
 
 .stat-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
   background: rgba(58, 84, 164, 0.1);
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@
   color: #f14e4b;
   line-height: 1;
   letter-spacing: -0.02em;
-  margin-bottom: 4px;
+  margin-bottom: 0.25rem;
 }
 
 /* This Week and Active Caregivers use navy */
@@ -114,7 +114,7 @@
   margin-top: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 2px;
+  margin-bottom: 0.125rem;
 }
 
 .stat-sub {
@@ -126,7 +126,7 @@
 
 .stat-watermark {
   position: absolute;
-  right: 16px;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   opacity: 0.07;
@@ -163,10 +163,10 @@
   backdrop-filter: blur(0.625rem);
   -webkit-backdrop-filter: blur(0.625rem);
   border: 1px solid rgba(248, 168, 167, 0.3);
-  border-left: 3px solid #f14e4b;
+  border-left: 0.1875rem solid #f14e4b;
   border-radius: 0.625rem;
   padding: 0.75rem 1rem;
-  box-shadow: 0 2px 12px rgba(241, 78, 75, 0.07);
+  box-shadow: 0 0.125rem 0.75rem rgba(241, 78, 75, 0.07);
   margin-bottom: 1rem;
 }
 
@@ -188,12 +188,12 @@
 /* ── Calendar wrapper ── */
 .calendar-wrapper {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(1.25rem);
+  -webkit-backdrop-filter: blur(1.25rem);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 0 4px 32px rgba(58, 84, 164, 0.08);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 0.25rem 2rem rgba(58, 84, 164, 0.08);
 }
 
 /* ── Fix 1 — Time grid event blocks ── */
@@ -221,7 +221,7 @@
 /* ── Single-day events: light blue pill, dark blue text ── */
 .fc-daygrid-event:not(.fc-h-event) {
   background: rgba(138, 169, 215, 0.28) !important;
-  border-radius: 20px !important;
+  border-radius: 1.25rem !important;
   border: 1px solid rgba(138, 169, 215, 0.4) !important;
   box-shadow: none !important;
 }
@@ -230,7 +230,7 @@
 .fc-h-event {
   background: rgba(138, 169, 215, 0.28) !important;
   border: 1px solid rgba(138, 169, 215, 0.4) !important;
-  border-radius: 20px !important;
+  border-radius: 1.25rem !important;
   box-shadow: none !important;
 }
 
@@ -249,11 +249,11 @@
   background: rgba(255, 255, 255, 0.7) !important;
   border: 1px solid rgba(138, 169, 215, 0.3) !important;
   color: #3a54a4 !important;
-  border-radius: 10px !important;
-  padding: 6px 16px !important;
+  border-radius: 0.625rem !important;
+  padding: 0.375rem 1rem !important;
   font-weight: 700 !important;
   font-size: 0.75rem !important;
-  backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(0.625rem) !important;
   transition: all 0.2s ease !important;
 }
 
@@ -278,15 +278,15 @@
   background: #2d3f8e !important;
   border: none !important;
   color: #ffffff !important;
-  border-radius: 10px !important;
-  width: 40px !important;
-  height: 40px !important;
+  border-radius: 0.625rem !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   transition: all 0.2s ease !important;
   padding: 0 !important;
-  box-shadow: 0 2px 8px rgba(45, 63, 142, 0.3) !important;
+  box-shadow: 0 0.125rem 0.5rem rgba(45, 63, 142, 0.3) !important;
 }
 
 .fc .fc-prev-button:hover,
@@ -299,7 +299,7 @@
 
 .fc .fc-prev-button:focus,
 .fc .fc-next-button:focus {
-  box-shadow: 0 2px 8px rgba(45, 63, 142, 0.3) !important;
+  box-shadow: 0 0.125rem 0.5rem rgba(45, 63, 142, 0.3) !important;
   outline: none !important;
 }
 
@@ -320,7 +320,7 @@
 
 .fc-timeGridDay-view .fc-col-header-cell {
   background: #eef2ff !important;
-  border-bottom: 2px solid rgba(138, 169, 215, 0.4) !important;
+  border-bottom: 0.125rem solid rgba(138, 169, 215, 0.4) !important;
   padding: 0.75rem 0 !important;
 }
 
@@ -339,7 +339,7 @@
 /* ── Fix 6 — Now indicator line ── */
 .fc-timegrid-now-indicator-line {
   border-color: #f14e4b !important;
-  border-width: 2px !important;
+  border-width: 0.125rem !important;
 }
 
 .fc-timegrid-now-indicator-arrow {

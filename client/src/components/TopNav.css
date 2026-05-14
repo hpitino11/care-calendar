@@ -7,8 +7,8 @@
   background: transparent;
   display: flex;
   align-items: center;
-  padding: 0 32px;
-  gap: 16px;
+  padding: 0 2rem;
+  gap: 1rem;
   z-index: 200;
   overflow: visible;
 }
@@ -40,7 +40,7 @@
   width: 100%;
   height: 2.25rem;
   padding: 0 0.75rem 0 2.125rem;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   border: 1px solid rgba(138, 169, 215, 0.3);
   background: rgba(255, 255, 255, 0.8);
   font-family: 'Spartan', sans-serif;
@@ -60,7 +60,7 @@
 .topnav-search-input:focus {
   background: #ffffff;
   border-color: #8aa9d7;
-  box-shadow: 0 0 0 3px rgba(138, 169, 215, 0.15);
+  box-shadow: 0 0 0 0.1875rem rgba(138, 169, 215, 0.15);
 }
 
 .topnav-search-dropdown {
@@ -198,14 +198,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(58, 84, 164, 0.25);
+  box-shadow: 0 0.125rem 0.5rem rgba(58, 84, 164, 0.25);
   transition: box-shadow 0.15s, transform 0.15s;
   flex-shrink: 0;
 }
 
 .topnav-user:hover .topnav-avatar {
-  box-shadow: 0 4px 12px rgba(58, 84, 164, 0.35);
-  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.75rem rgba(58, 84, 164, 0.35);
+  transform: translateY(-0.0625rem);
 }
 
 .topnav-user-name {
