@@ -163,6 +163,11 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
   const endDate = visit.end_date ? visit.end_date.split('T')[0] : null;
   const visitIsMultiDay = endDate && endDate !== startDate;
 
+  // For multi-day visits, count inclusive days (start date through end date)
+  const dayCount = visitIsMultiDay
+    ? Math.round((new Date(endDate + 'T00:00:00') - new Date(startDate + 'T00:00:00')) / 86400000) + 1
+    : null;
+
   // ── Edit mode — renders a full edit form instead of the detail view ──
   if (editMode) {
     return (
@@ -328,6 +333,9 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
           </span>
         </div>
         <p><span className="detail-label">Time</span> {visit.start_time} – {visit.end_time}</p>
+        {visitIsMultiDay && (
+          <p><span className="detail-label">Duration</span> {dayCount} {dayCount === 1 ? 'day' : 'days'}</p>
+        )}
         {visit.notes && <p><span className="detail-label">Notes</span> {visit.notes}</p>}
       </div>
 

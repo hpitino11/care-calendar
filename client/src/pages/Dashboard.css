@@ -347,9 +347,9 @@
   border-bottom-color: #f14e4b !important;
 }
 
-/* ── Fix 7 — Week view today column subtle tint ── */
+/* ── Fix 7 — Week view today column red tint ── */
 .fc-timeGridWeek-view .fc-day-today {
-  background: rgba(58, 84, 164, 0.06) !important;
+  background: rgba(241, 78, 75, 0.07) !important;
 }
 
 .fc-timeGridWeek-view .fc-timegrid-slot {
@@ -357,11 +357,11 @@
 }
 
 .fc-timeGridWeek-view .fc-col-header-cell.fc-day-today {
-  background: rgba(58, 84, 164, 0.12) !important;
+  background: rgba(241, 78, 75, 0.15) !important;
 }
 
 .fc-timeGridWeek-view .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
-  color: #2d3f8e !important;
+  color: #f14e4b !important;
 }
 
 /* ── Visit hover tooltip ── */
@@ -457,6 +457,33 @@
   font-size: 0.6875rem;
   color: #484858;
   margin-top: 0.0625rem;
+}
+
+/* ── Group tooltip — hoverable visit rows ── */
+.visit-tooltip-group-item {
+  padding: 0.4375rem 0.5rem;
+  margin: 0 -0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.visit-tooltip-group-item:hover {
+  background: rgba(58, 84, 164, 0.06);
+}
+
+.visit-tooltip-group-item + .visit-tooltip-group-item {
+  border-top: 1px solid rgba(138, 169, 215, 0.15);
+  margin-top: 0.125rem;
+  padding-top: 0.5rem;
+}
+
+.visit-tooltip-group-arrow {
+  font-size: 0.875rem;
+  color: #8aa9d7;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 0.25rem;
 }
 
 .visit-tooltip-details-btn {

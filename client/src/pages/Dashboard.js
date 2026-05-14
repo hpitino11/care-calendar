@@ -114,6 +114,63 @@ function groupWeekViewEvents(events) {
   return result;
 }
 
+// Shared single-visit tooltip content — used for both direct hover and group item branch
+function VisitTooltipBody({ visit, onViewDetails }) {
+  return (
+    <>
+      <p className="visit-tooltip-time">
+        {formatTime(visit.start_time)} – {formatTime(visit.end_time)}
+      </p>
+      <div className="visit-tooltip-row">
+        <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">
+          {visit.caregiver_name?.charAt(0)}
+        </div>
+        <div>
+          <p className="visit-tooltip-name">{visit.caregiver_name}</p>
+          <p className="visit-tooltip-label">Primary Caregiver</p>
+        </div>
+      </div>
+      <div className="visit-tooltip-row">
+        <div className="visit-tooltip-avatar visit-tooltip-avatar--client">
+          {visit.client_name?.charAt(0)}
+        </div>
+        <div>
+          <p className="visit-tooltip-name">{visit.client_name}</p>
+          <p className="visit-tooltip-label">Client</p>
+        </div>
+      </div>
+      {visit.service_type && (
+        <div className="visit-tooltip-row">
+          <div className="visit-tooltip-icon-wrap">♥</div>
+          <div>
+            <p className="visit-tooltip-name">{visit.service_type}</p>
+            <p className="visit-tooltip-label">Service Type</p>
+          </div>
+        </div>
+      )}
+      <div className="visit-tooltip-row">
+        <div className="visit-tooltip-icon-wrap">⏱</div>
+        <div>
+          <p className="visit-tooltip-name">{formatDuration(visit.start_time, visit.end_time)}</p>
+          <p className="visit-tooltip-label">Duration</p>
+        </div>
+      </div>
+      <div className="visit-tooltip-row">
+        <div className={`visit-tooltip-status-dot visit-tooltip-status-dot--${visit.status}`} />
+        <div>
+          <p className="visit-tooltip-name" style={{ textTransform: 'capitalize' }}>
+            {visit.status?.replace('_', ' ')}
+          </p>
+          <p className="visit-tooltip-label">Status</p>
+        </div>
+      </div>
+      <button className="visit-tooltip-details-btn" onClick={onViewDetails}>
+        View details <span>›</span>
+      </button>
+    </>
+  );
+}
+
 function Dashboard() {
   // ── State ──
   const [visits, setVisits] = useState([]);
@@ -123,8 +180,12 @@ function Dashboard() {
   const [prefillDate, setPrefillDate] = useState(''); // passed to AddVisitModal when clicking a date
   const [selectedVisit, setSelectedVisit] = useState(null); // opens VisitDetailModal
   const [tooltip, setTooltip] = useState(null); // hover tooltip data — null when hidden
+  const [subTooltip, setSubTooltip] = useState(null); // branching tooltip from a group item
   const [currentView, setCurrentView] = useState('dayGridMonth'); // tracks active calendar view
-  const tooltipTimeout = useRef(null); // delay ref so tooltip stays open when mouse moves onto it
+  const tooltipTimeout = useRef(null);
+  const subTooltipTimeout = useRef(null);
+  // Prevents other calendar events from hijacking the tooltip while the user is reading it
+  const mouseOnTooltip = useRef(false);
 
   // ── Data fetching ──
   const fetchVisits = async () => {
@@ -200,31 +261,24 @@ function Dashboard() {
   // Pre-process events for week view — groups close/overlapping visits into single cards
   const weekViewEvents = groupWeekViewEvents(calendarEvents);
 
-  // ── Tooltip handlers ──
-  const handleEventMouseEnter = (info) => {
-    // Tooltips only show in week/day views; month view and all-day rows are excluded
-    if (info.view.type === 'dayGridMonth') return;
-    if (info.event.allDay) return;
-
-    clearTimeout(tooltipTimeout.current);
-
-    // Position the tooltip to the right of the event, flipping left if it would overflow
-    const rect = info.el.getBoundingClientRect();
-    const tooltipWidth = 276; // matches .visit-tooltip width (17.25rem * 16)
+  // ── Tooltip positioning helper ──
+  const calcTooltipPos = (rect, width = 276, height = 300) => {
     const sidebarEl = document.querySelector('.sidebar');
     const sidebarWidth = (sidebarEl?.getBoundingClientRect().width ?? 240) + 16;
     let x = rect.right + 12;
-    if (x + tooltipWidth > window.innerWidth - 16) {
-      x = rect.left - tooltipWidth - 12;
-    }
-    // Clamp so the tooltip never slides behind the sidebar
+    if (x + width > window.innerWidth - 16) x = rect.left - width - 12;
     x = Math.max(x, sidebarWidth);
     let y = rect.top;
-    if (y + 280 > window.innerHeight - 16) {
-      y = window.innerHeight - 296;
-    }
+    if (y + height > window.innerHeight - 16) y = window.innerHeight - height - 16;
+    return { x, y };
+  };
 
-    // Group events show a list of all their visits; single events show full visit details
+  // ── Tooltip handlers ──
+  const handleEventMouseEnter = (info) => {
+    // Don't hijack the tooltip while the user's mouse is on it — they may be reading it
+    if (mouseOnTooltip.current) return;
+    clearTimeout(tooltipTimeout.current);
+    const { x, y } = calcTooltipPos(info.el.getBoundingClientRect());
     if (info.event.extendedProps.isGroup) {
       setTooltip({ x, y, isGroup: true, groupVisits: info.event.extendedProps.groupVisits });
     } else {
@@ -232,13 +286,43 @@ function Dashboard() {
     }
   };
 
-  // Small delay before hiding so the user can move the mouse onto the tooltip itself
+  // 400 ms grace period — enough time to move the mouse from a small pill to the tooltip
   const handleEventMouseLeave = () => {
-    tooltipTimeout.current = setTimeout(() => setTooltip(null), 120);
+    tooltipTimeout.current = setTimeout(() => { setTooltip(null); setSubTooltip(null); }, 400);
   };
 
-  const handleTooltipMouseEnter = () => clearTimeout(tooltipTimeout.current);
-  const handleTooltipMouseLeave = () => setTooltip(null);
+  const handleTooltipMouseEnter = () => {
+    mouseOnTooltip.current = true;
+    clearTimeout(tooltipTimeout.current);
+    clearTimeout(subTooltipTimeout.current);
+  };
+  const handleTooltipMouseLeave = () => {
+    mouseOnTooltip.current = false;
+    clearTimeout(subTooltipTimeout.current);
+    setSubTooltip(null);
+    tooltipTimeout.current = setTimeout(() => setTooltip(null), 150);
+  };
+
+  // ── Group-item hover → branching sub-tooltip ──
+  const handleGroupItemMouseEnter = (e, visit) => {
+    clearTimeout(subTooltipTimeout.current);
+    clearTimeout(tooltipTimeout.current);
+    const { x, y } = calcTooltipPos(e.currentTarget.getBoundingClientRect());
+    setSubTooltip({ x, y, visit });
+  };
+  const handleGroupItemMouseLeave = () => {
+    subTooltipTimeout.current = setTimeout(() => setSubTooltip(null), 150);
+  };
+  const handleSubTooltipMouseEnter = () => {
+    mouseOnTooltip.current = true;
+    clearTimeout(subTooltipTimeout.current);
+    clearTimeout(tooltipTimeout.current);
+  };
+  const handleSubTooltipMouseLeave = () => {
+    mouseOnTooltip.current = false;
+    setSubTooltip(null);
+    tooltipTimeout.current = setTimeout(() => setTooltip(null), 150);
+  };
 
   // Clicking an empty date slot pre-fills the date in the add modal
   const handleDateClick = (info) => {
@@ -246,9 +330,20 @@ function Dashboard() {
     setShowAddModal(true);
   };
 
+  // Resets all tooltip state — used whenever the tooltip is dismissed programmatically
+  // so mouseOnTooltip doesn't stay stuck true and block future hovers
+  const closeTooltips = () => {
+    mouseOnTooltip.current = false;
+    clearTimeout(tooltipTimeout.current);
+    clearTimeout(subTooltipTimeout.current);
+    setTooltip(null);
+    setSubTooltip(null);
+  };
+
   // Clicking an existing event opens the detail modal; group events only show tooltip on hover
   const handleEventClick = (info) => {
     if (info.event.extendedProps.isGroup) return;
+    closeTooltips();
     setSelectedVisit(info.event.extendedProps.visit);
   };
 
@@ -576,6 +671,9 @@ function Dashboard() {
               boxSizing: 'border-box',
             };
 
+            const durationMins = (arg.event.end - arg.event.start) / 60000;
+            const showServiceType = durationMins >= 90;
+
             return (
               <div style={{ ...cardStyle, padding: '0.375rem 0.5rem', gap: '0.125rem' }}>
                 <div style={{
@@ -625,7 +723,7 @@ function Dashboard() {
                     {arg.event.extendedProps.clientName}
                   </div>
                 </div>
-                {arg.event.extendedProps.serviceType && (
+                {showServiceType && arg.event.extendedProps.serviceType && (
                   <div style={{
                     fontFamily: 'Spartan, sans-serif',
                     fontWeight: 700,
@@ -664,7 +762,7 @@ function Dashboard() {
         />
       )}
 
-      {/* Hover tooltip — renders outside the calendar so it isn't clipped by overflow */}
+      {/* Main hover tooltip — single visit or group list */}
       {tooltip && (
         <div
           className="visit-tooltip"
@@ -673,83 +771,50 @@ function Dashboard() {
           onMouseLeave={handleTooltipMouseLeave}
         >
           {tooltip.isGroup ? (
-            // Group tooltip — lists each visit with caregiver, client, and service
             <>
               <p className="visit-tooltip-time">{tooltip.groupVisits.length} Visits</p>
               {tooltip.groupVisits.map((v, i) => (
-                <div key={i} className="visit-tooltip-row" style={{ alignItems: 'flex-start', marginBottom: i < tooltip.groupVisits.length - 1 ? '0.75rem' : 0 }}>
-                  <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver" style={{ marginTop: '0.125rem' }}>
-                    {v.caregiver_name?.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="visit-tooltip-name">{v.caregiver_name}</p>
-                    <p className="visit-tooltip-label">{v.client_name}</p>
-                    {v.service_type && (
-                      <p className="visit-tooltip-label" style={{ color: '#2d3f8e', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.625rem', letterSpacing: '0.05em' }}>
-                        {v.service_type}
-                      </p>
-                    )}
+                <div
+                  key={i}
+                  className="visit-tooltip-group-item"
+                  onMouseEnter={(e) => handleGroupItemMouseEnter(e, v)}
+                  onMouseLeave={handleGroupItemMouseLeave}
+                >
+                  <div className="visit-tooltip-row" style={{ marginBottom: 0 }}>
+                    <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">
+                      {v.caregiver_name?.charAt(0)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p className="visit-tooltip-name">{v.caregiver_name}</p>
+                      <p className="visit-tooltip-label">{v.client_name}</p>
+                      <p className="visit-tooltip-label">{formatTime(v.start_time)} – {formatTime(v.end_time)}</p>
+                    </div>
+                    <span className="visit-tooltip-group-arrow">›</span>
                   </div>
                 </div>
               ))}
             </>
           ) : (
-            // Single visit tooltip — full details with a link to open the detail modal
-            <>
-              <p className="visit-tooltip-time">
-                {formatTime(tooltip.visit.start_time)} – {formatTime(tooltip.visit.end_time)}
-              </p>
-              <div className="visit-tooltip-row">
-                <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">
-                  {tooltip.visit.caregiver_name?.charAt(0)}
-                </div>
-                <div>
-                  <p className="visit-tooltip-name">{tooltip.visit.caregiver_name}</p>
-                  <p className="visit-tooltip-label">Primary Caregiver</p>
-                </div>
-              </div>
-              <div className="visit-tooltip-row">
-                <div className="visit-tooltip-avatar visit-tooltip-avatar--client">
-                  {tooltip.visit.client_name?.charAt(0)}
-                </div>
-                <div>
-                  <p className="visit-tooltip-name">{tooltip.visit.client_name}</p>
-                  <p className="visit-tooltip-label">Client</p>
-                </div>
-              </div>
-              {tooltip.visit.service_type && (
-                <div className="visit-tooltip-row">
-                  <div className="visit-tooltip-icon-wrap">♥</div>
-                  <div>
-                    <p className="visit-tooltip-name">{tooltip.visit.service_type}</p>
-                    <p className="visit-tooltip-label">Service Type</p>
-                  </div>
-                </div>
-              )}
-              <div className="visit-tooltip-row">
-                <div className="visit-tooltip-icon-wrap">⏱</div>
-                <div>
-                  <p className="visit-tooltip-name">{formatDuration(tooltip.visit.start_time, tooltip.visit.end_time)}</p>
-                  <p className="visit-tooltip-label">Duration</p>
-                </div>
-              </div>
-              <div className="visit-tooltip-row">
-                <div className={`visit-tooltip-status-dot visit-tooltip-status-dot--${tooltip.visit.status}`} />
-                <div>
-                  <p className="visit-tooltip-name" style={{ textTransform: 'capitalize' }}>
-                    {tooltip.visit.status?.replace('_', ' ')}
-                  </p>
-                  <p className="visit-tooltip-label">Status</p>
-                </div>
-              </div>
-              <button
-                className="visit-tooltip-details-btn"
-                onClick={() => { setSelectedVisit(tooltip.visit); setTooltip(null); }}
-              >
-                View details <span>›</span>
-              </button>
-            </>
+            <VisitTooltipBody
+              visit={tooltip.visit}
+              onViewDetails={() => { setSelectedVisit(tooltip.visit); closeTooltips(); }}
+            />
           )}
+        </div>
+      )}
+
+      {/* Branching sub-tooltip — appears when hovering a row inside the group tooltip */}
+      {subTooltip && (
+        <div
+          className="visit-tooltip"
+          style={{ top: subTooltip.y, left: subTooltip.x }}
+          onMouseEnter={handleSubTooltipMouseEnter}
+          onMouseLeave={handleSubTooltipMouseLeave}
+        >
+          <VisitTooltipBody
+            visit={subTooltip.visit}
+            onViewDetails={() => { setSelectedVisit(subTooltip.visit); closeTooltips(); }}
+          />
         </div>
       )}
     </div>
