@@ -9,9 +9,18 @@ import BASE_URL from '../api';
 import './Dashboard.css';
 
 const STATUS_COLORS = {
-  scheduled:   '#3a54a4',
-  in_progress: '#f8a8a7',
-  completed:   '#9090a0',
+  scheduled:   '#2d3f8e',
+  in_progress: '#c17a5a',
+  completed:   '#6b7280',
+};
+
+const formatEventTime = (date) => {
+  if (!date) return '';
+  return new Date(date).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
 };
 
 function formatTime(timeStr) {
@@ -131,6 +140,32 @@ function Dashboard() {
     visits.filter((v) => v.status !== 'cancelled').map((v) => v.caregiver_id)
   ).size;
 
+  // Previous week for trend badges
+  const prevMonday = new Date(monday);
+  prevMonday.setDate(monday.getDate() - 7);
+  const prevSunday = new Date(prevMonday);
+  prevSunday.setDate(prevMonday.getDate() + 6);
+
+  const prevWeekScheduled = visits.filter((v) => {
+    const d = new Date(v.visit_date + 'T00:00:00');
+    return v.status === 'scheduled' && d >= prevMonday && d <= prevSunday;
+  }).length;
+
+  const prevActiveCaregivers = new Set(
+    visits.filter((v) => {
+      const d = new Date(v.visit_date + 'T00:00:00');
+      return v.status !== 'cancelled' && d >= prevMonday && d <= prevSunday;
+    }).map((v) => v.caregiver_id)
+  ).size;
+
+  function pctChange(current, previous) {
+    if (previous === 0) return null;
+    return Math.round(((current - previous) / previous) * 100);
+  }
+
+  const weekPct = pctChange(weekScheduled, prevWeekScheduled);
+  const caregiverPct = pctChange(activeCaregivers, prevActiveCaregivers);
+
   if (loading) return <p className="state-loading">Loading...</p>;
   if (error)   return <p className="state-error">Something went wrong.</p>;
 
@@ -176,6 +211,11 @@ function Dashboard() {
             <p className="stat-number">{weekScheduled}</p>
             <p className="stat-label">This Week</p>
             <p className="stat-sub">Scheduled visits</p>
+            {weekPct !== null && (
+              <span className={`stat-change ${weekPct >= 0 ? 'stat-change--pos' : 'stat-change--neg'}`}>
+                {weekPct > 0 ? '+' : ''}{weekPct}% vs last week
+              </span>
+            )}
           </div>
         </div>
 
@@ -192,6 +232,11 @@ function Dashboard() {
             <p className="stat-number">{activeCaregivers}</p>
             <p className="stat-label">Active Caregivers</p>
             <p className="stat-sub">With scheduled visits</p>
+            {caregiverPct !== null && (
+              <span className={`stat-change ${caregiverPct >= 0 ? 'stat-change--pos' : 'stat-change--neg'}`}>
+                {caregiverPct > 0 ? '+' : ''}{caregiverPct}% vs last week
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -226,47 +271,129 @@ function Dashboard() {
           eventMinHeight={40}
           eventContent={(arg) => {
             const isMonthView = arg.view.type === 'dayGridMonth';
+
+            // All-day row (multi-day visits in week/day view)
+            if (arg.event.allDay) {
+              return (
+                <div style={{ padding: '2px 6px', overflow: 'hidden' }}>
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '11px',
+                    color: '#ffffff',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {arg.event.extendedProps.caregiverName}
+                  </div>
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '10px',
+                    color: 'rgba(255,255,255,0.75)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {arg.event.extendedProps.clientName}
+                  </div>
+                  {arg.event.extendedProps.serviceType && (
+                    <div style={{
+                      fontFamily: 'Spartan, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '9px',
+                      color: 'rgba(255,255,255,0.6)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      marginTop: '1px',
+                    }}>
+                      {arg.event.extendedProps.serviceType}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Month view — compact single-line dot chip
+            if (isMonthView) {
+              return (
+                <div style={{ padding: '2px 4px', overflow: 'hidden' }}>
+                  <div style={{
+                    fontFamily: 'Spartan, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '11px',
+                    color: '#ffffff',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {arg.event.extendedProps.caregiverName}
+                  </div>
+                </div>
+              );
+            }
+
+            // Week / Day view — full info block
             return (
-              <div style={{ padding: '2px 4px', overflow: 'hidden' }}>
+              <div style={{
+                padding: '6px 8px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                gap: '2px',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  fontFamily: 'Spartan, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '10px',
+                  color: 'rgba(255,255,255,0.7)',
+                  letterSpacing: '0.02em',
+                }}>
+                  {formatEventTime(arg.event.start)} - {formatEventTime(arg.event.end)}
+                </div>
                 <div style={{
                   fontFamily: 'Spartan, sans-serif',
                   fontWeight: 700,
-                  fontSize: isMonthView ? '11px' : '12px',
-                  color: isMonthView ? '#3a54a4' : '#ffffff',
+                  fontSize: '12px',
+                  color: '#ffffff',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}>
                   {arg.event.extendedProps.caregiverName}
                 </div>
-                {!isMonthView && (
+                <div style={{
+                  fontFamily: 'Spartan, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '11px',
+                  color: 'rgba(255,255,255,0.8)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {arg.event.extendedProps.clientName}
+                </div>
+                {arg.event.extendedProps.serviceType && (
                   <div style={{
-                    fontFamily: 'Spartan, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '11px',
-                    color: 'rgba(138, 169, 215, 0.75)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    marginTop: '1px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    marginTop: '4px',
                   }}>
-                    {arg.event.extendedProps.clientName}
-                  </div>
-                )}
-                {!isMonthView && arg.event.extendedProps.serviceType && (
-                  <div style={{
-                    fontFamily: 'Spartan, sans-serif',
-                    fontWeight: 700,
-                    fontSize: '10px',
-                    color: 'rgba(248, 168, 167, 0.9)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    marginTop: '2px',
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                  }}>
-                    {arg.event.extendedProps.serviceType}
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>♥</span>
+                    <span style={{
+                      fontFamily: 'Spartan, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '9px',
+                      color: 'rgba(255,255,255,0.7)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                    }}>
+                      {arg.event.extendedProps.serviceType}
+                    </span>
                   </div>
                 )}
               </div>

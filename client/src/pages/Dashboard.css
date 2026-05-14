@@ -90,7 +90,7 @@
 .stat-number {
   font-size: 36px;
   font-weight: 700;
-  color: #f14e4b;
+  color: #2d3f8e;
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -109,6 +109,27 @@
   color: #9090a0;
   margin-top: 3px;
   font-weight: 400;
+}
+
+/* ── Stat change badge ── */
+.stat-change {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
+
+.stat-change--pos {
+  background: rgba(45, 63, 142, 0.09);
+  color: #2d3f8e;
+}
+
+.stat-change--neg {
+  background: rgba(45, 63, 142, 0.09);
+  color: #2d3f8e;
 }
 
 /* ── Cancelled bar ── */
@@ -148,4 +169,131 @@
   box-shadow: 0 4px 32px rgba(58, 84, 164, 0.09);
   border: 1px solid rgba(255, 255, 255, 0.85);
   padding: 20px;
+}
+
+/* ── Fix 1 — Time grid event blocks ── */
+.fc-timegrid-event {
+  border-radius: 10px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(45, 63, 142, 0.25) !important;
+}
+
+/* ── Fix 2 — All-day / multi-day event blocks ── */
+.fc-daygrid-event {
+  border-radius: 8px !important;
+  border: none !important;
+  padding: 4px 8px !important;
+  box-shadow: 0 1px 4px rgba(45, 63, 142, 0.2) !important;
+}
+
+.fc-h-event {
+  background: #2d3f8e !important;
+  border: none !important;
+  border-radius: 8px !important;
+}
+
+.fc-daygrid-block-event .fc-event-title {
+  font-family: 'Spartan', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  color: #ffffff !important;
+  padding: 2px 0 !important;
+}
+
+/* ── Fix 4 — Active view button (Month / Week / Day) ── */
+.fc-button-group .fc-button-active,
+.fc-button-group .fc-button-active:focus {
+  background: #2d3f8e !important;
+  color: #ffffff !important;
+  border-color: #2d3f8e !important;
+  box-shadow: none !important;
+}
+
+.fc-button-group .fc-button-active:hover {
+  background: #243275 !important;
+  border-color: #243275 !important;
+}
+
+/* ── Fix 5 — Prev / Next navigation arrows ── */
+.fc-prev-button,
+.fc-next-button {
+  background: #ffffff !important;
+  border: 1.5px solid #8aa9d7 !important;
+  color: #3a54a4 !important;
+  border-radius: 8px !important;
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+}
+
+.fc-prev-button:hover,
+.fc-next-button:hover {
+  background: #2d3f8e !important;
+  border-color: #2d3f8e !important;
+  color: #ffffff !important;
+}
+
+.fc-prev-button .fc-icon,
+.fc-next-button .fc-icon {
+  color: inherit !important;
+  font-size: 14px !important;
+}
+
+/* ── Fix 6 — Day view clean white background ── */
+.fc-timeGridDay-view .fc-day-today {
+  background: #ffffff !important;
+}
+
+.fc-timeGridDay-view .fc-timegrid-col {
+  background: #ffffff !important;
+}
+
+.fc-timeGridDay-view .fc-col-header-cell {
+  background: #fef5f5 !important;
+  border-bottom: 2px solid rgba(248, 168, 167, 0.4) !important;
+  padding: 12px 0 !important;
+}
+
+.fc-timeGridDay-view .fc-timegrid-slot {
+  border-color: rgba(138, 169, 215, 0.15) !important;
+  height: 40px !important;
+}
+
+.fc-timeGridDay-view .fc-timegrid-slot-label {
+  font-family: 'Spartan', sans-serif !important;
+  font-size: 11px !important;
+  color: #9090a0 !important;
+  font-weight: 400 !important;
+}
+
+/* ── Fix 6 — Now indicator line ── */
+.fc-timegrid-now-indicator-line {
+  border-color: #f14e4b !important;
+  border-width: 2px !important;
+}
+
+.fc-timegrid-now-indicator-arrow {
+  border-top-color: #f14e4b !important;
+  border-bottom-color: #f14e4b !important;
+}
+
+/* ── Fix 7 — Week view today column subtle tint ── */
+.fc-timeGridWeek-view .fc-day-today {
+  background: rgba(241, 78, 75, 0.04) !important;
+}
+
+.fc-timeGridWeek-view .fc-timegrid-slot {
+  border-color: rgba(138, 169, 215, 0.12) !important;
+}
+
+.fc-timeGridWeek-view .fc-col-header-cell.fc-day-today {
+  background: rgba(241, 78, 75, 0.06) !important;
+}
+
+.fc-timeGridWeek-view .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
+  color: #f14e4b !important;
 }

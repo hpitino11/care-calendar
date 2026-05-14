@@ -1,4 +1,4 @@
-/* ── Page header — breaks out of main-content padding to be full-width ── */
+/* ── Page header ── */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -16,6 +16,14 @@
   font-size: 24px;
   font-weight: 700;
   color: #1a1a2e;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: #9090a0;
+  margin-top: 3px;
+  font-weight: 400;
 }
 
 /* ── Action button ── */
@@ -27,8 +35,11 @@
   padding: 10px 20px;
   font-size: 13px;
   font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
   box-shadow: 0 2px 8px rgba(241, 78, 75, 0.3);
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -37,163 +48,162 @@
   transform: translateY(-1px);
 }
 
-/* ── Search input ── */
+/* ── Search bar with icon ── */
+.search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 320px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.search-icon-inline {
+  position: absolute;
+  left: 12px;
+  color: #9090a0;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
 .search-input {
   width: 100%;
-  max-width: 360px;
-  padding: 10px 16px;
-  border: 1.5px solid #8aa9d7;
+  padding: 10px 16px 10px 36px;
+  border: 1.5px solid rgba(138, 169, 215, 0.5);
   border-radius: 8px;
-  font-family: 'Spartan', sans-serif;
-  font-size: 14px;
+  font-family: inherit;
+  font-size: 13px;
   color: #1a1a2e;
   background: #ffffff;
   outline: none;
-  margin-bottom: 24px;
-  display: block;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
   border-color: #3a54a4;
-  box-shadow: 0 0 0 3px rgba(58, 84, 164, 0.1);
+  box-shadow: 0 0 0 3px rgba(58, 84, 164, 0.08);
 }
 
 .search-input::placeholder {
-  color: #9090a0;
+  color: #b0b0be;
 }
 
-/* ── Card grid ── */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  margin-top: 8px;
-}
-
-/* ── Caregiver / client card ── */
-.caregiver-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 28px 24px;
-  box-shadow: 0 2px 16px rgba(58, 84, 164, 0.08);
-  border: 1px solid rgba(248, 168, 167, 0.25);
+/* ── Caregiver list ── */
+.caregiver-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  gap: 12px;
+  max-width: 540px;
+}
+
+/* ── Caregiver card — horizontal ── */
+.caregiver-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 12px rgba(58, 84, 164, 0.07);
+  border: 1px solid rgba(230, 230, 240, 0.8);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 .caregiver-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(58, 84, 164, 0.18);
-  border-color: rgba(241, 78, 75, 0.3);
-}
-
-/* Red gradient accent line that appears on hover */
-.caregiver-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #f14e4b, #f8a8a7);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  border-radius: 16px 16px 0 0;
-}
-
-.caregiver-card:hover::before {
-  opacity: 1;
+  box-shadow: 0 4px 20px rgba(58, 84, 164, 0.12);
+  border-color: rgba(248, 168, 167, 0.4);
 }
 
 /* ── Avatar ── */
 .caregiver-avatar {
-  width: 72px;
-  height: 72px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: linear-gradient(135deg, #f14e4b 0%, #f8a8a7 100%);
   color: #ffffff;
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
-  box-shadow: 0 4px 12px rgba(241, 78, 75, 0.25);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  flex-shrink: 0;
 }
 
-.caregiver-card:hover .caregiver-avatar {
-  box-shadow: 0 8px 20px rgba(241, 78, 75, 0.35);
-  transform: scale(1.05);
+/* ── Info block ── */
+.caregiver-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .caregiver-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #1a1a2e;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .caregiver-detail {
-  font-size: 12px;
-  color: #4a4a6a;
-  margin-bottom: 4px;
+  font-size: 13px;
+  color: #6a6a8a;
   display: flex;
   align-items: center;
   gap: 6px;
-  justify-content: center;
+  margin-bottom: 3px;
+}
+
+.caregiver-detail svg {
+  flex-shrink: 0;
+  color: #9090a0;
+}
+
+/* ── Card action buttons ── */
+.caregiver-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .card-edit {
-  display: block;
-  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
   background: none;
-  border: 1.5px solid #8aa9d7;
-  border-radius: 6px;
-  color: #3a54a4;
-  font-family: 'Spartan', sans-serif;
+  border: 1.5px solid #d0d0dc;
+  border-radius: 7px;
+  color: #4a4a6a;
+  font-family: inherit;
   font-size: 12px;
-  font-weight: 700;
-  padding: 7px 0;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 14px;
-  transition: all 0.2s ease;
-  letter-spacing: 0.04em;
+  transition: border-color 0.15s, color 0.15s;
 }
 
 .card-edit:hover {
-  background: #3a54a4;
-  color: #ffffff;
   border-color: #3a54a4;
+  color: #3a54a4;
 }
 
 .btn-delete {
-  display: block;
-  width: 100%;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(248, 168, 167, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
   background: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: none;
-  color: #9090a0;
+  border: 1.5px solid #f8a8a7;
+  border-radius: 7px;
+  color: #f14e4b;
+  font-family: inherit;
   font-size: 12px;
-  font-family: 'Spartan', sans-serif;
-  letter-spacing: 0.04em;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .btn-delete:hover {
-  color: #f14e4b;
+  background: #fef5f5;
+  border-color: #f14e4b;
 }
 
 /* ── Modal form styles (shared across Caregivers, Clients, Visits) ── */
@@ -215,7 +225,6 @@
   margin-bottom: 18px;
 }
 
-/* Uppercase labels inside forms */
 .form-group label {
   font-weight: 700;
   font-size: 12px;
@@ -241,7 +250,7 @@
   padding: 12px;
   font-size: 14px;
   font-weight: 700;
-  font-family: 'Spartan', sans-serif;
+  font-family: inherit;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -256,7 +265,7 @@
   border: none;
   color: #9090a0;
   font-size: 13px;
-  font-family: 'Spartan', sans-serif;
+  font-family: inherit;
   padding: 10px;
   cursor: pointer;
   transition: color 0.15s;
@@ -274,7 +283,7 @@
   border: 1.5px solid #3a54a4;
   border-radius: 8px;
   color: #3a54a4;
-  font-family: 'Spartan', sans-serif;
+  font-family: inherit;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
