@@ -521,7 +521,6 @@ function Dashboard() {
 
             // Month view — pill with avatar initials + caregiver name
             if (isMonthView) {
-              const isMultiDay = arg.event.allDay;
               const initials = arg.event.extendedProps.caregiverName
                 ? arg.event.extendedProps.caregiverName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
                 : '?';
