@@ -45,6 +45,65 @@ function formatDuration(startTime, endTime) {
   return `${hours}h ${mins}m`;
 }
 
+// Groups overlapping or close (≤30 min gap) timed events per day for week view
+function groupWeekViewEvents(events) {
+  const CLOSE_MS = 30 * 60 * 1000;
+  const byDay = {};
+  const result = [];
+
+  events.forEach((event) => {
+    if (event.allDay) { result.push(event); return; }
+    const day = event.start.split('T')[0];
+    if (!byDay[day]) byDay[day] = [];
+    byDay[day].push(event);
+  });
+
+  Object.values(byDay).forEach((dayEvents) => {
+    const sorted = [...dayEvents].sort((a, b) => new Date(a.start) - new Date(b.start));
+    const groups = [];
+    let group = [sorted[0]];
+    let maxEnd = new Date(sorted[0].end);
+
+    for (let i = 1; i < sorted.length; i++) {
+      const start = new Date(sorted[i].start);
+      const end = new Date(sorted[i].end);
+      if (start <= new Date(maxEnd.getTime() + CLOSE_MS)) {
+        group.push(sorted[i]);
+        if (end > maxEnd) maxEnd = end;
+      } else {
+        groups.push(group);
+        group = [sorted[i]];
+        maxEnd = end;
+      }
+    }
+    groups.push(group);
+
+    groups.forEach((g) => {
+      if (g.length === 1) {
+        result.push(g[0]);
+      } else {
+        const starts = g.map((e) => new Date(e.start));
+        const ends = g.map((e) => new Date(e.end));
+        result.push({
+          id: `grp-${g.map((e) => e.id).join('-')}`,
+          title: `${g.length} Visits`,
+          start: new Date(Math.min(...starts)).toISOString(),
+          end: new Date(Math.max(...ends)).toISOString(),
+          backgroundColor: '#2d3f8e',
+          borderColor: 'transparent',
+          extendedProps: {
+            isGroup: true,
+            groupVisits: g.map((e) => e.extendedProps.visit),
+            count: g.length,
+          },
+        });
+      }
+    });
+  });
+
+  return result;
+}
+
 function Dashboard() {
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +112,7 @@ function Dashboard() {
   const [prefillDate, setPrefillDate] = useState('');
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [tooltip, setTooltip] = useState(null);
+  const [currentView, setCurrentView] = useState('dayGridMonth');
   const tooltipTimeout = useRef(null);
 
   const fetchVisits = async () => {
@@ -123,6 +183,8 @@ function Dashboard() {
       };
     });
 
+  const weekViewEvents = groupWeekViewEvents(calendarEvents);
+
   const handleEventMouseEnter = (info) => {
     if (info.view.type === 'dayGridMonth') return;
     if (info.event.allDay) return;
@@ -137,7 +199,11 @@ function Dashboard() {
     if (y + 280 > window.innerHeight - 16) {
       y = window.innerHeight - 296;
     }
-    setTooltip({ x, y, visit: info.event.extendedProps.visit });
+    if (info.event.extendedProps.isGroup) {
+      setTooltip({ x, y, isGroup: true, groupVisits: info.event.extendedProps.groupVisits });
+    } else {
+      setTooltip({ x, y, visit: info.event.extendedProps.visit });
+    }
   };
 
   const handleEventMouseLeave = () => {
@@ -153,8 +219,9 @@ function Dashboard() {
     setShowAddModal(true);
   };
 
-  // Clicking an existing event opens the detail modal
+  // Clicking an existing event opens the detail modal; group events only show tooltip
   const handleEventClick = (info) => {
+    if (info.event.extendedProps.isGroup) return;
     setSelectedVisit(info.event.extendedProps.visit);
   };
 
@@ -302,7 +369,8 @@ function Dashboard() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
-          events={calendarEvents}
+          events={currentView === 'timeGridWeek' ? weekViewEvents : calendarEvents}
+          datesSet={(info) => setCurrentView(info.view.type)}
           eventBackgroundColor="#2d3f8e"
           eventBorderColor="transparent"
           eventDisplay="block"
@@ -406,6 +474,41 @@ function Dashboard() {
                       marginTop: '1px',
                     }}>
                       {arg.event.extendedProps.serviceType}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Week view grouped events — show count + top caregiver names
+            if (arg.event.extendedProps.isGroup) {
+              const { count, groupVisits } = arg.event.extendedProps;
+              return (
+                <div style={{
+                  background: 'rgba(45, 63, 142, 0.13)',
+                  borderLeft: '3px solid #2d3f8e',
+                  borderRadius: '0 0.5rem 0.5rem 0',
+                  height: '100%',
+                  width: '100%',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  boxSizing: 'border-box',
+                  padding: '6px 8px',
+                  gap: '2px',
+                }}>
+                  <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 700, fontSize: '12px', color: '#1a1a2e' }}>
+                    {count} Visits
+                  </div>
+                  {groupVisits.slice(0, 2).map((v, i) => (
+                    <div key={i} style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {v.caregiver_name}
+                    </div>
+                  ))}
+                  {groupVisits.length > 2 && (
+                    <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '10px', color: '#9090a0' }}>
+                      +{groupVisits.length - 2} more
                     </div>
                   )}
                 </div>
@@ -535,58 +638,82 @@ function Dashboard() {
           onMouseEnter={handleTooltipMouseEnter}
           onMouseLeave={handleTooltipMouseLeave}
         >
-          <p className="visit-tooltip-time">
-            {formatTime(tooltip.visit.start_time)} – {formatTime(tooltip.visit.end_time)}
-          </p>
-          <div className="visit-tooltip-row">
-            <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">
-              {tooltip.visit.caregiver_name?.charAt(0)}
-            </div>
-            <div>
-              <p className="visit-tooltip-name">{tooltip.visit.caregiver_name}</p>
-              <p className="visit-tooltip-label">Primary Caregiver</p>
-            </div>
-          </div>
-          <div className="visit-tooltip-row">
-            <div className="visit-tooltip-avatar visit-tooltip-avatar--client">
-              {tooltip.visit.client_name?.charAt(0)}
-            </div>
-            <div>
-              <p className="visit-tooltip-name">{tooltip.visit.client_name}</p>
-              <p className="visit-tooltip-label">Client</p>
-            </div>
-          </div>
-          {tooltip.visit.service_type && (
-            <div className="visit-tooltip-row">
-              <div className="visit-tooltip-icon-wrap">♥</div>
-              <div>
-                <p className="visit-tooltip-name">{tooltip.visit.service_type}</p>
-                <p className="visit-tooltip-label">Service Type</p>
-              </div>
-            </div>
-          )}
-          <div className="visit-tooltip-row">
-            <div className="visit-tooltip-icon-wrap">⏱</div>
-            <div>
-              <p className="visit-tooltip-name">{formatDuration(tooltip.visit.start_time, tooltip.visit.end_time)}</p>
-              <p className="visit-tooltip-label">Duration</p>
-            </div>
-          </div>
-          <div className="visit-tooltip-row">
-            <div className={`visit-tooltip-status-dot visit-tooltip-status-dot--${tooltip.visit.status}`} />
-            <div>
-              <p className="visit-tooltip-name" style={{ textTransform: 'capitalize' }}>
-                {tooltip.visit.status?.replace('_', ' ')}
+          {tooltip.isGroup ? (
+            <>
+              <p className="visit-tooltip-time">{tooltip.groupVisits.length} Visits</p>
+              {tooltip.groupVisits.map((v, i) => (
+                <div key={i} className="visit-tooltip-row" style={{ alignItems: 'flex-start', marginBottom: i < tooltip.groupVisits.length - 1 ? '0.75rem' : 0 }}>
+                  <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver" style={{ marginTop: '0.125rem' }}>
+                    {v.caregiver_name?.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="visit-tooltip-name">{v.caregiver_name}</p>
+                    <p className="visit-tooltip-label">{v.client_name}</p>
+                    {v.service_type && (
+                      <p className="visit-tooltip-label" style={{ color: '#2d3f8e', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.625rem', letterSpacing: '0.05em' }}>
+                        {v.service_type}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <p className="visit-tooltip-time">
+                {formatTime(tooltip.visit.start_time)} – {formatTime(tooltip.visit.end_time)}
               </p>
-              <p className="visit-tooltip-label">Status</p>
-            </div>
-          </div>
-          <button
-            className="visit-tooltip-details-btn"
-            onClick={() => { setSelectedVisit(tooltip.visit); setTooltip(null); }}
-          >
-            View details <span>›</span>
-          </button>
+              <div className="visit-tooltip-row">
+                <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">
+                  {tooltip.visit.caregiver_name?.charAt(0)}
+                </div>
+                <div>
+                  <p className="visit-tooltip-name">{tooltip.visit.caregiver_name}</p>
+                  <p className="visit-tooltip-label">Primary Caregiver</p>
+                </div>
+              </div>
+              <div className="visit-tooltip-row">
+                <div className="visit-tooltip-avatar visit-tooltip-avatar--client">
+                  {tooltip.visit.client_name?.charAt(0)}
+                </div>
+                <div>
+                  <p className="visit-tooltip-name">{tooltip.visit.client_name}</p>
+                  <p className="visit-tooltip-label">Client</p>
+                </div>
+              </div>
+              {tooltip.visit.service_type && (
+                <div className="visit-tooltip-row">
+                  <div className="visit-tooltip-icon-wrap">♥</div>
+                  <div>
+                    <p className="visit-tooltip-name">{tooltip.visit.service_type}</p>
+                    <p className="visit-tooltip-label">Service Type</p>
+                  </div>
+                </div>
+              )}
+              <div className="visit-tooltip-row">
+                <div className="visit-tooltip-icon-wrap">⏱</div>
+                <div>
+                  <p className="visit-tooltip-name">{formatDuration(tooltip.visit.start_time, tooltip.visit.end_time)}</p>
+                  <p className="visit-tooltip-label">Duration</p>
+                </div>
+              </div>
+              <div className="visit-tooltip-row">
+                <div className={`visit-tooltip-status-dot visit-tooltip-status-dot--${tooltip.visit.status}`} />
+                <div>
+                  <p className="visit-tooltip-name" style={{ textTransform: 'capitalize' }}>
+                    {tooltip.visit.status?.replace('_', ' ')}
+                  </p>
+                  <p className="visit-tooltip-label">Status</p>
+                </div>
+              </div>
+              <button
+                className="visit-tooltip-details-btn"
+                onClick={() => { setSelectedVisit(tooltip.visit); setTooltip(null); }}
+              >
+                View details <span>›</span>
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

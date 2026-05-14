@@ -3,6 +3,18 @@ import Modal from '../components/Modal';
 import BASE_URL from '../api';
 import './Caregivers.css';
 
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits.length ? `(${digits}` : '';
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+function capitalizeEmail(value) {
+  if (!value) return '';
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 function Caregivers() {
   const [caregivers, setCaregivers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +42,10 @@ function Caregivers() {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+    if (name === 'phone') value = formatPhone(value);
+    if (name === 'email') value = capitalizeEmail(value);
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -65,7 +80,10 @@ function Caregivers() {
   };
 
   const handleEditChange = (e) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+    if (name === 'phone') value = formatPhone(value);
+    if (name === 'email') value = capitalizeEmail(value);
+    setEditForm({ ...editForm, [name]: value });
   };
 
   const handleEditSubmit = async (e) => {
