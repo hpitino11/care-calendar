@@ -8,7 +8,7 @@ An admin dashboard for managing home care visits, caregivers, and clients. Built
 
 ## Overview
 
-Care Calendar gives administrators a centralized view of a caregiving operation — who is working, who they are caring for, and when. The dashboard surfaces key stats at a glance and provides a full interactive calendar for scheduling and reviewing visits across month, week, and day views.
+Care Calendar gives administrators a centralized view of a caregiving operation - who is working, who they are caring for, and when. The dashboard surfaces key stats at a glance and provides a full interactive calendar for scheduling and reviewing visits across month, week, and day views.
 
 ---
 
@@ -21,7 +21,7 @@ Care Calendar gives administrators a centralized view of a caregiving operation 
 - Interactive FullCalendar with month, week, and day views
 - Click any date to pre-fill the Add Visit modal
 - Hover tooltips on week/day events showing caregiver, client, service type, duration, and status
-- Week view visit grouping — overlapping or close-in-time visits are collapsed into a single card with a hover tooltip listing each grouped visit
+- Week view visit grouping - overlapping or close-in-time visits are collapsed into a single card with a hover tooltip listing each grouped visit
 
 ### Visits
 - Full visit list with search, pagination, and status filtering
@@ -152,9 +152,9 @@ The frontend runs on `http://localhost:3000` and proxies API requests to the bac
 
 This dashboard is intentionally scoped as a technical demo. A production deployment would include:
 
-- **Authentication** — login flow with session management or JWT tokens to restrict access to authorized admins only
-- **Role-based access control** — different permission levels for admins, supervisors, and read-only viewers
-- **HTTPS** — all API communication over TLS
-- **Input sanitization** — server-side validation beyond the current format checks
-- **Rate limiting** — prevent abuse of the public API endpoints
-- **Audit logging** — track who created, edited, or deleted records and when
+- **Authentication** - login flow with session management or JWT tokens to restrict access to authorized admins only
+- **Role-based access control** - different permission levels for admins, supervisors, and read-only viewers
+- **HTTPS** - all API communication over TLS
+- **Input sanitization** - server-side validation beyond the current format checks
+- **Rate limiting** - prevent abuse of the public API endpoints
+- **Audit logging** - track who created, edited, or deleted records and when
