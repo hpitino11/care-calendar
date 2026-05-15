@@ -24,7 +24,7 @@
   color: #3a54a4;
   font-size: 0.75rem;
   font-weight: 700;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', sans-serif;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
@@ -153,7 +153,7 @@
 .status-badge {
   font-size: 0.6875rem;
   font-weight: 700;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', sans-serif;
   padding: 0.25rem 0.75rem;
   border-radius: 1.25rem;
   text-transform: capitalize;
@@ -171,8 +171,8 @@
 }
 
 .status-badge--completed {
-  background: #e8e8e8;
-  color: #4a4a6a;
+  background: #16a34a;
+  color: #ffffff;
 }
 
 .status-badge--cancelled {
@@ -183,7 +183,7 @@
 /* ── Service type tag ── */
 .visit-service-tag {
   display: inline-block;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', sans-serif;
   font-size: 0.625rem;
   font-weight: 700;
   color: #3a54a4;

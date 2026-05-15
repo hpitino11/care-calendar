@@ -12,7 +12,7 @@ import './Dashboard.css';
 const STATUS_COLORS = {
   scheduled:   '#2d3f8e',
   in_progress: '#2d3f8e',
-  completed:   '#2d3f8e',
+  completed:   '#16a34a',
 };
 
 // Formats a JS Date object to a readable 12-hour time string (used in week/day event cards)
@@ -277,7 +277,9 @@ function Dashboard() {
         end: calendarEnd,
         allDay: Boolean(isMultiDay),
         backgroundColor: STATUS_COLORS[v.status] || STATUS_COLORS.scheduled,
+        textColor: '#0d0d1a',
         borderColor: 'transparent',
+        classNames: v.status === 'completed' ? ['event--completed'] : [],
         extendedProps: {
           caregiverName: v.caregiver_name,
           clientName: v.client_name,
@@ -610,7 +612,7 @@ function Dashboard() {
                     color: '#ffffff',
                     fontSize: '0.5625rem',
                     fontWeight: 700,
-                    fontFamily: 'Spartan, sans-serif',
+                    fontFamily: 'Lora, serif',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -620,7 +622,7 @@ function Dashboard() {
                     {initials}
                   </div>
                   <span style={{
-                    fontFamily: 'Spartan, sans-serif',
+                    fontFamily: 'Lora, serif',
                     fontWeight: 700,
                     fontSize: '0.6875rem',
                     color: '#1a2f6e',
@@ -635,7 +637,7 @@ function Dashboard() {
                   {timeLabel && (
                     <span style={{
                       flexShrink: 0,
-                      fontFamily: 'Spartan, sans-serif',
+                      fontFamily: 'Lora, serif',
                       fontWeight: 600,
                       fontSize: '0.5625rem',
                       color: '#5e6ea8',
@@ -661,7 +663,7 @@ function Dashboard() {
                     color: '#ffffff',
                     fontSize: '0.5625rem',
                     fontWeight: 700,
-                    fontFamily: 'Spartan, sans-serif',
+                    fontFamily: 'Lora, serif',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -674,7 +676,7 @@ function Dashboard() {
                   </div>
                   <div style={{ overflow: 'hidden', minWidth: 0 }}>
                     <div style={{
-                      fontFamily: 'Spartan, sans-serif',
+                      fontFamily: 'Lora, serif',
                       fontWeight: 700,
                       fontSize: '0.6875rem',
                       color: '#1a2f6e',
@@ -686,7 +688,7 @@ function Dashboard() {
                     </div>
                     {arg.event.extendedProps.clientName && (
                       <div style={{
-                        fontFamily: 'Spartan, sans-serif',
+                        fontFamily: 'Lora, serif',
                         fontWeight: 400,
                         fontSize: '0.625rem',
                         color: '#484858',
@@ -720,11 +722,11 @@ function Dashboard() {
                   padding: '0.375rem 0.5rem',
                   gap: '0.125rem',
                 }}>
-                  <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 700, fontSize: '0.75rem', color: '#1a1a2e' }}>
+                  <div style={{ fontFamily: 'Lora, serif', fontWeight: 700, fontSize: '0.75rem', color: '#1a1a2e' }}>
                     {count} Visits
                   </div>
                   {groupVisits.slice(0, 2).map((v, i) => (
-                    <div key={i} style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '0.625rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div key={i} style={{ fontFamily: 'Lora, serif', fontWeight: 400, fontSize: '0.625rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {v.caregiver_name}
                       <span style={{ color: '#484858', margin: '0 0.1875rem' }}>·</span>
                       {formatTime(v.start_time)} – {formatTime(v.end_time)}
@@ -732,7 +734,7 @@ function Dashboard() {
                   ))}
                   {/* Show overflow count if there are more than 2 caregivers in the group */}
                   {groupVisits.length > 2 && (
-                    <div style={{ fontFamily: 'Spartan, sans-serif', fontWeight: 400, fontSize: '0.625rem', color: '#484858' }}>
+                    <div style={{ fontFamily: 'Lora, serif', fontWeight: 400, fontSize: '0.625rem', color: '#484858' }}>
                       +{groupVisits.length - 2} more
                     </div>
                   )}
@@ -741,9 +743,11 @@ function Dashboard() {
             }
 
             // Week / Day view — full card with time, caregiver, client, and service type
+            const isCompleted = arg.event.extendedProps.visit?.status === 'completed';
+            const cardAccent = isCompleted ? '#16a34a' : '#2d3f8e';
             const cardStyle = {
-              background: 'rgba(45, 63, 142, 0.08)',
-              borderLeft: '0.1875rem solid #2d3f8e',
+              background: isCompleted ? 'rgba(22, 163, 74, 0.08)' : 'rgba(45, 63, 142, 0.08)',
+              borderLeft: `0.1875rem solid ${cardAccent}`,
               borderRadius: '0 0.5rem 0.5rem 0',
               height: '100%',
               width: '100%',
@@ -760,7 +764,7 @@ function Dashboard() {
             return (
               <div style={{ ...cardStyle, padding: '0.375rem 0.5rem', gap: '0.125rem' }}>
                 <div style={{
-                  fontFamily: 'Spartan, sans-serif',
+                  fontFamily: 'Lora, serif',
                   fontWeight: 400,
                   fontSize: '0.625rem',
                   color: '#484858',
@@ -769,15 +773,12 @@ function Dashboard() {
                   {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
-                  {/* Caregiver: user-plus icon */}
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <line x1="19" y1="8" x2="19" y2="14"/>
-                    <line x1="22" y1="11" x2="16" y2="11"/>
+                  {/* Caregiver: heart icon */}
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={cardAccent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
                   <div style={{
-                    fontFamily: 'Spartan, sans-serif',
+                    fontFamily: 'Lora, serif',
                     fontWeight: 700,
                     fontSize: '0.75rem',
                     color: '#1a1a2e',
@@ -795,7 +796,7 @@ function Dashboard() {
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
                   <div style={{
-                    fontFamily: 'Spartan, sans-serif',
+                    fontFamily: 'Lora, serif',
                     fontWeight: 400,
                     fontSize: '0.6875rem',
                     color: '#4a4a6a',
@@ -808,7 +809,7 @@ function Dashboard() {
                 </div>
                 {showServiceType && arg.event.extendedProps.serviceType && (
                   <div style={{
-                    fontFamily: 'Spartan, sans-serif',
+                    fontFamily: 'Lora, serif',
                     fontWeight: 700,
                     fontSize: '0.5625rem',
                     color: '#2d3f8e',

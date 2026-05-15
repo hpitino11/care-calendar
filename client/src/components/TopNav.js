@@ -10,10 +10,6 @@ function TopNav() {
   const navigate = useNavigate();
   const searchRef = useRef(null);
 
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric',
-  });
-
   // Load all data once so search works client-side without per-keystroke requests
   useEffect(() => {
     const fetchAll = async () => {
@@ -130,8 +126,6 @@ function TopNav() {
       </div>
 
       <div className="topnav-right">
-        <span className="topnav-date">{today}</span>
-
         <div className="topnav-user">
           <div className="topnav-avatar">A</div>
           <span className="topnav-user-name">Admin</span>

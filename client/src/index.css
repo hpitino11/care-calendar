@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Spartan:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap');
 
 :root {
   --red:           #f14e4b;
@@ -24,7 +24,7 @@ html {
 }
 
 * {
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -34,6 +34,9 @@ body {
   background: linear-gradient(135deg, #fde8e8 0%, #f8d0d0 25%, #e8d8f5 60%, #d0dff5 100%);
   color: var(--text-dark);
   min-height: 100vh;
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @keyframes blobFloat1 {
@@ -142,8 +145,9 @@ textarea {
   border: 1.5px solid var(--blue-light);
   border-radius: 0.5rem;
   padding: 0.625rem 0.875rem;
-  font-size: 0.875rem;
-  font-family: 'Spartan', sans-serif;
+  font-size: 0.9375rem;
+  font-family: 'Lora', serif;
+  font-weight: 600;
   width: 100%;
   background: var(--white);
   color: var(--text-dark);
@@ -175,7 +179,8 @@ label {
 /* ── Buttons ── */
 button {
   cursor: pointer;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
+  font-weight: 600;
   appearance: none;
   transition: all 0.2s ease;
 }
@@ -204,12 +209,13 @@ button {
 
 /* ── FullCalendar overrides ── */
 .fc {
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
+  --fc-neutral-text-color: #0d0d1a;
 }
 
 .fc-toolbar-title {
-  font-family: 'Spartan', sans-serif !important;
-  font-size: 1.25rem !important;
+  font-family: 'Lora', serif !important;
+  font-size: 1.5rem !important;
   font-weight: 700 !important;
   color: #1a1a2e !important;
   letter-spacing: -0.02em !important;
@@ -219,7 +225,7 @@ button {
   background: rgba(255, 255, 255, 0.7) !important;
   border: 1px solid rgba(138, 169, 215, 0.3) !important;
   color: #3a54a4 !important;
-  font-family: 'Spartan', sans-serif !important;
+  font-family: 'Lora', serif !important;
   font-weight: 700 !important;
   font-size: 0.75rem !important;
   border-radius: 0.625rem !important;
@@ -256,9 +262,9 @@ button {
 }
 
 .fc .fc-col-header-cell-cushion {
-  font-family: 'Spartan', sans-serif !important;
+  font-family: 'Lora', serif !important;
   font-weight: 700 !important;
-  font-size: 0.6875rem !important;
+  font-size: 0.75rem !important;
   color: #5e5e74 !important;
   letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
@@ -278,10 +284,13 @@ button {
   background: rgba(241, 78, 75, 0.07) !important;
 }
 
-.fc .fc-timegrid-slot-label-cushion {
-  font-size: 0.6875rem !important;
-  color: #484858 !important;
-  font-family: 'Spartan', sans-serif !important;
+.fc .fc-timegrid-slot-label-cushion,
+.fc .fc-timegrid-axis-cushion {
+  font-size: 0.8125rem !important;
+  font-weight: 700 !important;
+  color: #0d0d1a !important;
+  font-family: 'Lora', serif !important;
+  letter-spacing: 0.06em !important;
 }
 
 .fc .fc-scrollgrid {
@@ -302,14 +311,14 @@ button {
   border-radius: 0.375rem !important;
   padding: 0.125rem 0.375rem !important;
   font-size: 0.75rem !important;
-  font-family: 'Spartan', sans-serif !important;
+  font-family: 'Lora', serif !important;
   font-weight: 700 !important;
 }
 
 .fc .fc-daygrid-day-number {
-  font-family: 'Spartan', sans-serif !important;
+  font-family: 'Lora', serif !important;
   font-weight: 700 !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.875rem !important;
   color: #4a4a6a !important;
   text-decoration: none;
   padding: 0.375rem 0.625rem !important;
@@ -352,6 +361,14 @@ button {
 
 .fc-daygrid-event-dot {
   display: none !important;
+}
+
+.fc .fc-daygrid-event .fc-event-time,
+.fc .fc-daygrid-event .fc-event-title {
+  font-weight: 700 !important;
+  color: #0d0d1a !important;
+  letter-spacing: 0.05em !important;
+  font-size: 0.6875rem !important;
 }
 
 /* True-center the toolbar: give left and right chunks equal flex-grow so center lands in the middle */

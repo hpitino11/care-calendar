@@ -44,7 +44,7 @@
   border-radius: 0.75rem;
   border: 1px solid rgba(138, 169, 215, 0.3);
   background: rgba(255, 255, 255, 0.8);
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
   font-size: 0.8125rem;
   font-weight: 500;
   color: #1a1a2e;
@@ -55,7 +55,7 @@
 
 .topnav-search-input::placeholder {
   color: #484858;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
 }
 
 .topnav-search-input:focus {
