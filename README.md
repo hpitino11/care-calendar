@@ -32,11 +32,11 @@ Care Calendar gives administrators a centralized view of a caregiving operation:
 ### Caregivers
 - Add, edit, and delete caregivers
 - Auto-formatted phone numbers `(XXX) XXX-XXXX` with a 10-digit cap
-- Email input with first-letter capitalization
+- Name and email validation on add and edit
 
 ### Clients
 - Add, edit, and delete clients
-- Same phone and email formatting as caregivers
+- Same phone formatting and validation as caregivers
 
 ---
 
@@ -126,7 +126,15 @@ Create `client/.env`:
 REACT_APP_API_URL=http://localhost:8080
 ```
 
-### 3. Install dependencies
+### 3. Set up the database
+
+Create a PostgreSQL database and run the schema:
+```bash
+createdb care_calendar
+psql -d care_calendar -f server/db/schema.sql
+```
+
+### 4. Install dependencies
 ```bash
 # Backend
 cd server && npm install
@@ -135,7 +143,7 @@ cd server && npm install
 cd ../client && npm install
 ```
 
-### 4. Start the servers
+### 5. Start the servers
 ```bash
 # Backend (from /server)
 node index.js
@@ -144,7 +152,7 @@ node index.js
 npm start
 ```
 
-The frontend runs on `http://localhost:3000` and proxies API requests to the backend on port `8080`.
+The frontend runs on `http://localhost:3000` and connects to the backend on port `8080`.
 
 ---
 

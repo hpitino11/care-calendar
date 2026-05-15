@@ -270,6 +270,16 @@
   border: 1px solid rgba(22, 163, 74, 0.25) !important;
 }
 
+/* ── Month view — grey out days that belong to a different month ── */
+.fc-dayGridMonth-view .fc-day-other,
+.fc-dayGridMonth-view .fc-day-other .fc-daygrid-day-frame {
+  background: #f0eded !important;
+}
+
+.fc-dayGridMonth-view .fc-day-other .fc-daygrid-day-number {
+  color: #b09898 !important;
+}
+
 /* ── Month view — compact bars with gap below date number ── */
 .fc-dayGridMonth-view .fc-daygrid-event {
   padding: 0 !important;

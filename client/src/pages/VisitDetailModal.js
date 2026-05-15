@@ -169,7 +169,7 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...editForm, [name]: value };
-    if (name === 'visit_date') {
+    if (name === 'visit_date' && editForm.service_type !== '24/7 Care') {
       updated.start_time = '';
       updated.end_time = '';
     }
@@ -377,19 +377,49 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
     <Modal onClose={onClose}>
       <h2 className="modal-title">Visit Details</h2>
       <div className="visit-detail">
-        <p><span className="detail-label">Caregiver</span> {visit.caregiver_name || '—'}</p>
-        <p><span className="detail-label">Client</span> {visit.client_name || '—'}</p>
+        <div className="detail-field">
+          <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Caregiver
+          </span>
+          {visit.caregiver_name || '—'}
+        </div>
+        <div className="detail-field">
+          <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Client
+          </span>
+          {visit.client_name || '—'}
+        </div>
         {visit.service_type && (
           <div className="detail-field">
-            <span className="detail-label">Service</span>
+            <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>
+                <path d="M12 8v4l3 3"/>
+              </svg>
+              Service
+            </span>
             <span className="visit-service-tag">{visit.service_type}</span>
           </div>
         )}
         <div className="detail-field">
-          <span className="detail-label">Date</span>
+          <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Date
+          </span>
           <span>
             {startDate ? formatFullDate(startDate) : '—'}
-            {/* Show end date and a multi-day badge if the visit spans multiple days */}
             {visitIsMultiDay && (
               <>
                 <span style={{ color: '#f14e4b', margin: '0 6px' }}>→</span>
@@ -413,11 +443,41 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
             )}
           </span>
         </div>
-        <p><span className="detail-label">Time</span> {visit.start_time} – {visit.end_time}</p>
+        <div className="detail-field">
+          <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Time
+          </span>
+          {visit.start_time} – {visit.end_time}
+        </div>
         {visitIsMultiDay && (
-          <p><span className="detail-label">Duration</span> {dayCount} {dayCount === 1 ? 'day' : 'days'}</p>
+          <div className="detail-field">
+            <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="17" y1="10" x2="3" y2="10"/>
+                <line x1="21" y1="6" x2="3" y2="6"/>
+                <line x1="21" y1="14" x2="3" y2="14"/>
+                <line x1="17" y1="18" x2="3" y2="18"/>
+              </svg>
+              Duration
+            </span>
+            {dayCount} {dayCount === 1 ? 'day' : 'days'}
+          </div>
         )}
-        {visit.notes && <p><span className="detail-label">Notes</span> {visit.notes}</p>}
+        {visit.notes && (
+          <div className="detail-field">
+            <span className="detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Notes
+            </span>
+            {visit.notes}
+          </div>
+        )}
       </div>
 
       {/* Quick status update — saves only the status without opening the full edit form */}

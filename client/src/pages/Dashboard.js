@@ -584,6 +584,19 @@ function Dashboard() {
           // Week view uses grouped events; all other views use the standard event list
           events={currentView === 'timeGridWeek' ? weekViewEvents : calendarEvents}
           datesSet={(info) => setCurrentView(info.view.type)}
+          dayHeaderContent={(arg) => {
+            if (arg.view.type !== 'timeGridDay') return arg.text;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const d = new Date(arg.date);
+            d.setHours(0, 0, 0, 0);
+            const dayName = arg.date.toLocaleDateString('en-US', { weekday: 'long' });
+            if (d.getTime() === today.getTime()) return `Today, ${dayName}`;
+            if (d.getTime() === tomorrow.getTime()) return `Tomorrow, ${dayName}`;
+            return arg.text;
+          }}
           eventBackgroundColor="#2d3f8e"
           eventBorderColor="transparent"
           eventDisplay="block"
@@ -616,12 +629,12 @@ function Dashboard() {
                   overflow: 'hidden',
                 }}>
                   <div style={{
-                    width: '1.25rem',
-                    height: '1.25rem',
+                    width: '1.375rem',
+                    height: '1.375rem',
                     borderRadius: '50%',
                     background: '#2d3f8e',
                     color: '#ffffff',
-                    fontSize: '0.5625rem',
+                    fontSize: '0.625rem',
                     fontWeight: 700,
                     fontFamily: 'Lora, serif',
                     display: 'flex',
@@ -635,7 +648,7 @@ function Dashboard() {
                   <span style={{
                     fontFamily: 'Lora, serif',
                     fontWeight: 700,
-                    fontSize: '0.75rem',
+                    fontSize: '0.875rem',
                     color: '#1a2f6e',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -650,7 +663,7 @@ function Dashboard() {
                       flexShrink: 0,
                       fontFamily: 'Lora, serif',
                       fontWeight: 600,
-                      fontSize: '0.625rem',
+                      fontSize: '0.75rem',
                       color: '#5e6ea8',
                       whiteSpace: 'nowrap',
                       letterSpacing: '0.01em',

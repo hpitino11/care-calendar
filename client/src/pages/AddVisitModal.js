@@ -117,8 +117,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...formData, [name]: value };
-    // Clear time selections when caregiver or date changes — booked slots will differ
-    if (name === 'caregiver_id' || name === 'visit_date') {
+    // Clear time selections when caregiver or date changes — but not for 24/7 Care since its times are fixed
+    if ((name === 'caregiver_id' || name === 'visit_date') && formData.service_type !== '24/7 Care') {
       updated.start_time = '';
       updated.end_time = '';
     }

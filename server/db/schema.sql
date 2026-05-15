@@ -17,9 +17,11 @@ CREATE TABLE IF NOT EXISTS visits (
   caregiver_id INTEGER REFERENCES caregivers(id) ON DELETE SET NULL,
   client_id INTEGER REFERENCES clients(id) ON DELETE SET NULL,
   visit_date DATE NOT NULL,
+  end_date DATE,
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
   status VARCHAR(20) DEFAULT 'scheduled',
+  service_type VARCHAR(100),
   notes TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );

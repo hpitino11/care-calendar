@@ -1,3 +1,3 @@
-const BASE_URL = 'https://care-calendar-production.up.railway.app';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export default BASE_URL;
