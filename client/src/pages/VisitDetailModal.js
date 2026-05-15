@@ -36,6 +36,23 @@ function generateTimeOptions() {
 
 const TIME_OPTIONS = generateTimeOptions();
 
+function isStartBlocked(time, bookedSlots) {
+  return bookedSlots.some(({ start_time, end_time }) => {
+    const s = start_time.slice(0, 5);
+    const e = end_time.slice(0, 5);
+    return time >= s && time < e;
+  });
+}
+
+function isEndBlocked(time, startTime, bookedSlots) {
+  if (!startTime) return false;
+  return bookedSlots.some(({ start_time, end_time }) => {
+    const bs = start_time.slice(0, 5);
+    const be = end_time.slice(0, 5);
+    return startTime < be && time > bs;
+  });
+}
+
 // Formats a date string to a human-readable format, e.g. "Wed, May 14, 2025"
 function formatFullDate(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -51,6 +68,8 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
   const [editForm, setEditForm] = useState({});
   const [isMultiDay, setIsMultiDay] = useState(false);
   const [editDateError, setEditDateError] = useState('');
+  const [conflictError, setConflictError] = useState('');
+  const [bookedSlots, setBookedSlots] = useState([]);
   const [caregivers, setCaregivers] = useState([]);
   const [clients, setClients] = useState([]);
 
@@ -95,6 +114,30 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
     fetchDropdowns();
   }, [editMode]);
 
+  // ── Fetch booked slots when caregiver or date changes in edit form ──
+  useEffect(() => {
+    if (!editMode || !editForm.caregiver_id || !editForm.visit_date) {
+      setBookedSlots([]);
+      return;
+    }
+    const fetchSlots = async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/api/visits/caregiver-slots?caregiver_id=${editForm.caregiver_id}&date=${editForm.visit_date}`
+        );
+        const slots = await res.json();
+        // Exclude the current visit's own time slot so it doesn't block itself
+        setBookedSlots(slots.filter(s =>
+          s.start_time.slice(0, 5) !== visit.start_time?.slice(0, 5) ||
+          s.end_time.slice(0, 5)   !== visit.end_time?.slice(0, 5)
+        ));
+      } catch (err) {
+        console.error('Failed to load caregiver availability', err);
+      }
+    };
+    fetchSlots();
+  }, [editMode, editForm.caregiver_id, editForm.visit_date]);
+
   // ── Action handlers ──
 
   // Quick status update — only sends the status field, leaves all other visit data unchanged
@@ -124,7 +167,17 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
   };
 
   const handleEditChange = (e) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const updated = { ...editForm, [name]: value };
+    if (name === 'caregiver_id' || name === 'visit_date') {
+      updated.start_time = '';
+      updated.end_time = '';
+    }
+    if (name === 'start_time' && editForm.end_time && editForm.end_time <= value) {
+      updated.end_time = '';
+    }
+    setEditForm(updated);
+    setConflictError('');
   };
 
   const handleEditSubmit = async (e) => {
@@ -142,15 +195,20 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
     }
 
     try {
-      await fetch(`${BASE_URL}/api/visits/${visit.id}`, {
+      const res = await fetch(`${BASE_URL}/api/visits/${visit.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...editForm,
-          // Fall back to visit_date if end_date was cleared (single-day visit)
           end_date: editForm.end_date || editForm.visit_date,
         }),
       });
+      if (res.status === 409) {
+        const data = await res.json();
+        setConflictError(data.message);
+        return;
+      }
+      if (!res.ok) throw new Error('Request failed');
       onSuccess();
       onClose();
     } catch (err) {
@@ -248,18 +306,30 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
             <label>Start Time *</label>
             <select name="start_time" value={editForm.start_time} onChange={handleEditChange} required>
               <option value="">Select start time</option>
-              {TIME_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
+              {TIME_OPTIONS.map((opt) => {
+                const blocked = isStartBlocked(opt.value, bookedSlots);
+                return (
+                  <option key={opt.value} value={opt.value} disabled={blocked}>
+                    {opt.label}{blocked ? ' — already booked' : ''}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div className="form-group">
             <label>End Time *</label>
             <select name="end_time" value={editForm.end_time} onChange={handleEditChange} required>
               <option value="">Select end time</option>
-              {TIME_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
+              {TIME_OPTIONS
+                .filter((opt) => !editForm.start_time || opt.value > editForm.start_time)
+                .map((opt) => {
+                  const blocked = isEndBlocked(opt.value, editForm.start_time, bookedSlots);
+                  return (
+                    <option key={opt.value} value={opt.value} disabled={blocked}>
+                      {opt.label}{blocked ? ' — conflict' : ''}
+                    </option>
+                  );
+                })}
             </select>
           </div>
           <div className="form-group">
@@ -280,6 +350,8 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
               rows={3}
             />
           </div>
+          {conflictError && <p className="form-conflict-error">{conflictError}</p>}
+
           <div className="form-actions">
             <button type="submit" className="btn-submit">Save Changes</button>
             <button type="button" className="btn-cancel" onClick={() => setEditMode(false)}>

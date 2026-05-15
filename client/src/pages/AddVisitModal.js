@@ -35,12 +35,33 @@ function generateTimeOptions() {
 // Pre-built at module level so it isn't recalculated on every render
 const TIME_OPTIONS = generateTimeOptions();
 
+// True if `time` falls inside any booked slot (caregiver is already working then)
+function isStartBlocked(time, bookedSlots) {
+  return bookedSlots.some(({ start_time, end_time }) => {
+    const s = start_time.slice(0, 5);
+    const e = end_time.slice(0, 5);
+    return time >= s && time < e;
+  });
+}
+
+// True if choosing `time` as the end would overlap with any booked slot
+function isEndBlocked(time, startTime, bookedSlots) {
+  if (!startTime) return false;
+  return bookedSlots.some(({ start_time, end_time }) => {
+    const bs = start_time.slice(0, 5);
+    const be = end_time.slice(0, 5);
+    return startTime < be && time > bs;
+  });
+}
+
 function AddVisitModal({ onClose, onSuccess, prefillDate }) {
   // ── State ──
   const [caregivers, setCaregivers] = useState([]);
   const [clients, setClients] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]);
   const [isMultiDay, setIsMultiDay] = useState(false); // toggles end date field visibility
   const [dateError, setDateError] = useState('');
+  const [conflictError, setConflictError] = useState('');
   const [formData, setFormData] = useState({
     caregiver_id: '',
     client_id: '',
@@ -70,11 +91,41 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
     fetchDropdowns();
   }, []);
 
+  // ── Fetch booked slots for the selected caregiver + date ──
+  useEffect(() => {
+    if (!formData.caregiver_id || !formData.visit_date) {
+      setBookedSlots([]);
+      return;
+    }
+    const fetchSlots = async () => {
+      try {
+        const res = await fetch(
+          `${BASE_URL}/api/visits/caregiver-slots?caregiver_id=${formData.caregiver_id}&date=${formData.visit_date}`
+        );
+        setBookedSlots(await res.json());
+      } catch (err) {
+        console.error('Failed to load caregiver availability', err);
+      }
+    };
+    fetchSlots();
+  }, [formData.caregiver_id, formData.visit_date]);
+
   // ── Form handlers ──
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear the date error whenever the end date field changes
-    if (e.target.name === 'end_date') setDateError('');
+    const { name, value } = e.target;
+    const updated = { ...formData, [name]: value };
+    // Clear time selections when caregiver or date changes — booked slots will differ
+    if (name === 'caregiver_id' || name === 'visit_date') {
+      updated.start_time = '';
+      updated.end_time = '';
+    }
+    // Clear end_time if it's no longer after the new start_time
+    if (name === 'start_time' && formData.end_time && formData.end_time <= value) {
+      updated.end_time = '';
+    }
+    setFormData(updated);
+    if (name === 'end_date') setDateError('');
+    setConflictError('');
   };
 
   const handleSubmit = async (e) => {
@@ -96,12 +147,18 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
     if (!isMultiDay) delete body.end_date;
 
     try {
-      await fetch(`${BASE_URL}/api/visits`, {
+      const res = await fetch(`${BASE_URL}/api/visits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      onSuccess(); // re-fetch the visit list in the parent component
+      if (res.status === 409) {
+        const data = await res.json();
+        setConflictError(data.message);
+        return;
+      }
+      if (!res.ok) throw new Error('Request failed');
+      onSuccess();
       onClose();
     } catch (err) {
       alert('Something went wrong. Please try again.');
@@ -191,18 +248,30 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
           <label>Start Time *</label>
           <select name="start_time" value={formData.start_time} onChange={handleChange} required>
             <option value="">Select start time</option>
-            {TIME_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
+            {TIME_OPTIONS.map((opt) => {
+              const blocked = isStartBlocked(opt.value, bookedSlots);
+              return (
+                <option key={opt.value} value={opt.value} disabled={blocked}>
+                  {opt.label}{blocked ? ' — already booked' : ''}
+                </option>
+              );
+            })}
           </select>
         </div>
         <div className="form-group">
           <label>End Time *</label>
           <select name="end_time" value={formData.end_time} onChange={handleChange} required>
             <option value="">Select end time</option>
-            {TIME_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
+            {TIME_OPTIONS
+              .filter((opt) => !formData.start_time || opt.value > formData.start_time)
+              .map((opt) => {
+                const blocked = isEndBlocked(opt.value, formData.start_time, bookedSlots);
+                return (
+                  <option key={opt.value} value={opt.value} disabled={blocked}>
+                    {opt.label}{blocked ? ' — conflict' : ''}
+                  </option>
+                );
+              })}
           </select>
         </div>
 
@@ -216,6 +285,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             rows={3}
           />
         </div>
+
+        {conflictError && <p className="form-conflict-error">{conflictError}</p>}
 
         <div className="form-actions">
           <button type="submit" className="btn-submit">Schedule Visit</button>

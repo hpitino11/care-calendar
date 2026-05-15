@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getAllVisits, createVisit, updateVisit, updateVisitStatus, deleteVisit } = require('../controllers/visitController');
+const { getAllVisits, createVisit, updateVisit, updateVisitStatus, deleteVisit, getCaregiverSlots } = require('../controllers/visitController');
 
+router.get('/caregiver-slots', getCaregiverSlots);
 router.get('/', getAllVisits);
 router.post('/', createVisit);
 router.put('/:id/status', updateVisitStatus);

@@ -41,3 +41,14 @@
 .modal-close:hover {
   color: #f14e4b;
 }
+
+.form-conflict-error {
+  background: rgba(241, 78, 75, 0.07);
+  border: 1px solid rgba(241, 78, 75, 0.3);
+  border-radius: 0.5rem;
+  color: #c0392b;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.75rem;
+}
