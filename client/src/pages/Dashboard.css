@@ -544,3 +544,52 @@
 .visit-tooltip-details-btn:hover {
   background: rgba(45, 63, 142, 0.12);
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  .dash-greeting {
+    font-size: 1.25rem;
+  }
+
+  .dash-date {
+    font-size: 0.8125rem;
+  }
+
+  .stats-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    min-height: auto;
+    padding: 1.125rem 1.25rem;
+  }
+
+  .stat-number {
+    font-size: 2.25rem;
+  }
+
+  .stat-watermark {
+    display: none;
+  }
+
+  .calendar-wrapper {
+    padding: 0.875rem 0.625rem;
+    border-radius: 1rem;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+
+  .fc .fc-button {
+    font-size: 0.6875rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+
+  .visit-tooltip {
+    width: calc(100vw - 2rem);
+    left: 1rem !important;
+    right: 1rem;
+  }
+}

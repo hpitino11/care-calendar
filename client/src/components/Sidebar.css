@@ -8,7 +8,17 @@
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
-  z-index: 100;
+  z-index: 300;
+  transition: transform 0.25s ease;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar-open .sidebar {
+    transform: translateX(0);
+  }
 }
 
 .sidebar-logo {

@@ -213,3 +213,34 @@
   color: #3a54a4;
   margin-right: 0.5rem;
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  .visits-search {
+    max-width: 100%;
+  }
+
+  .visit-row {
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .visit-caregiver {
+    font-size: 0.8125rem;
+  }
+
+  .visit-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.375rem;
+  }
+
+  .filter-row {
+    gap: 0.375rem;
+  }
+
+  .filter-btn {
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.75rem;
+  }
+}

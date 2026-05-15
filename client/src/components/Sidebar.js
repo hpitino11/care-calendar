@@ -49,7 +49,7 @@ const navItems = [
   },
 ];
 
-function Sidebar() {
+function Sidebar({ onClose }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
@@ -66,6 +66,7 @@ function Sidebar() {
             className={({ isActive }) =>
               isActive ? 'sidebar-link sidebar-link--active' : 'sidebar-link'
             }
+            onClick={onClose}
           >
             <span className="sidebar-link-icon">{item.icon}</span>
             {item.label}

@@ -4,6 +4,28 @@
   overflow: hidden;
 }
 
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .right-pane {
+    margin-left: 0;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 250;
+  }
+}
+
 .right-pane {
   flex: 1;
   margin-left: var(--sidebar-width);
