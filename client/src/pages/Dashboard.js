@@ -629,7 +629,7 @@ function Dashboard() {
                   <span style={{
                     fontFamily: 'Lora, serif',
                     fontWeight: 700,
-                    fontSize: '0.6875rem',
+                    fontSize: '0.75rem',
                     color: '#1a2f6e',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -644,7 +644,7 @@ function Dashboard() {
                       flexShrink: 0,
                       fontFamily: 'Lora, serif',
                       fontWeight: 600,
-                      fontSize: '0.5625rem',
+                      fontSize: '0.625rem',
                       color: '#5e6ea8',
                       whiteSpace: 'nowrap',
                       letterSpacing: '0.01em',
@@ -731,10 +731,24 @@ function Dashboard() {
                     {count} Visits
                   </div>
                   {groupVisits.slice(0, 2).map((v, i) => (
-                    <div key={i} style={{ fontFamily: 'Lora, serif', fontWeight: 400, fontSize: '0.625rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {v.caregiver_name}
-                      <span style={{ color: '#484858', margin: '0 0.1875rem' }}>·</span>
-                      {formatTime(v.start_time)} – {formatTime(v.end_time)}
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.0625rem', overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span style={{ fontFamily: 'Lora, serif', fontWeight: 700, fontSize: '0.625rem', color: '#1a1a2e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {v.caregiver_name}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span style={{ fontFamily: 'Lora, serif', fontWeight: 400, fontSize: '0.5625rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {v.client_name} · {formatTime(v.start_time)}–{formatTime(v.end_time)}
+                        </span>
+                      </div>
                     </div>
                   ))}
                   {/* Show overflow count if there are more than 2 caregivers in the group */}
@@ -764,28 +778,29 @@ function Dashboard() {
             };
 
             const durationMins = (arg.event.end - arg.event.start) / 60000;
+            const showClientName = durationMins >= 60;
             const showServiceType = durationMins >= 90;
 
             return (
-              <div style={{ ...cardStyle, padding: '0.375rem 0.5rem', gap: '0.125rem' }}>
+              <div style={{ ...cardStyle, padding: '0.375rem 0.5rem', gap: '0.1875rem' }}>
                 <div style={{
                   fontFamily: 'Lora, serif',
-                  fontWeight: 400,
-                  fontSize: '0.625rem',
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
                   color: '#484858',
                   letterSpacing: '0.02em',
                 }}>
                   {formatEventTime(arg.event.start)} – {formatEventTime(arg.event.end)}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden' }}>
                   {/* Caregiver: heart icon */}
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={cardAccent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={cardAccent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
                   <div style={{
                     fontFamily: 'Lora, serif',
                     fontWeight: 700,
-                    fontSize: '0.75rem',
+                    fontSize: '0.9375rem',
                     color: '#1a1a2e',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -794,29 +809,31 @@ function Dashboard() {
                     {arg.event.extendedProps.caregiverName}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
-                  {/* Client: plain user icon */}
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  <div style={{
-                    fontFamily: 'Lora, serif',
-                    fontWeight: 400,
-                    fontSize: '0.6875rem',
-                    color: '#4a4a6a',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {arg.event.extendedProps.clientName}
+                {showClientName && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden' }}>
+                    {/* Client: plain user icon */}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <div style={{
+                      fontFamily: 'Lora, serif',
+                      fontWeight: 400,
+                      fontSize: '0.875rem',
+                      color: '#4a4a6a',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}>
+                      {arg.event.extendedProps.clientName}
+                    </div>
                   </div>
-                </div>
+                )}
                 {showServiceType && arg.event.extendedProps.serviceType && (
                   <div style={{
                     fontFamily: 'Lora, serif',
                     fontWeight: 700,
-                    fontSize: '0.5625rem',
+                    fontSize: '0.6875rem',
                     color: '#2d3f8e',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',

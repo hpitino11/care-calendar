@@ -301,9 +301,16 @@
   box-shadow: none !important;
 }
 
+.fc-button-group .fc-button:hover {
+  background: #c93c39 !important;
+  border-color: #c93c39 !important;
+  color: #ffffff !important;
+}
+
 .fc-button-group .fc-button-active:hover {
-  background: #d94340 !important;
-  border-color: #d94340 !important;
+  background: #c93c39 !important;
+  border-color: #c93c39 !important;
+  color: #ffffff !important;
 }
 
 /* ── Prev / Next navigation arrows — white with blue arrows ── */
@@ -543,6 +550,15 @@
 
 .visit-tooltip-details-btn:hover {
   background: rgba(45, 63, 142, 0.12);
+}
+
+/* ── Hide FullCalendar's internal time grid scrollbar (scroll still works) ── */
+.fc-scroller::-webkit-scrollbar {
+  display: none;
+}
+.fc-scroller {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* ── Mobile responsive ── */

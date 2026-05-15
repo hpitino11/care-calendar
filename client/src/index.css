@@ -424,9 +424,9 @@ button {
 }
 
 .fc-button-group .fc-button:hover {
-  background: #fef5f5 !important;
-  border-color: #f14e4b !important;
-  color: #f14e4b !important;
+  background: #c93c39 !important;
+  border-color: #c93c39 !important;
+  color: #ffffff !important;
 }
 
 .fc-button-group .fc-button-active {
