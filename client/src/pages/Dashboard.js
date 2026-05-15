@@ -259,13 +259,19 @@ function Dashboard() {
       const startDate = v.visit_date ? v.visit_date.split('T')[0] : v.visit_date;
       const endDate = v.end_date ? v.end_date.split('T')[0] : startDate;
       const isMultiDay = endDate && endDate !== startDate;
+      const is247 = v.service_type === '24/7 Care';
+      const isAllDay = Boolean(isMultiDay) || is247;
 
-      // FullCalendar's end date is exclusive, so multi-day events need one extra day added
+      // FullCalendar's end date is exclusive, so all-day events need one extra day added
       let calendarEnd;
       if (isMultiDay) {
         const endDateObj = new Date(endDate + 'T00:00:00');
         endDateObj.setDate(endDateObj.getDate() + 1);
         calendarEnd = endDateObj.toISOString().split('T')[0];
+      } else if (is247) {
+        const nextDay = new Date(startDate + 'T00:00:00');
+        nextDay.setDate(nextDay.getDate() + 1);
+        calendarEnd = nextDay.toISOString().split('T')[0];
       } else {
         calendarEnd = `${startDate}T${v.end_time}`;
       }
@@ -273,9 +279,9 @@ function Dashboard() {
       return {
         id: String(v.id),
         title: v.caregiver_name,
-        start: isMultiDay ? startDate : `${startDate}T${v.start_time}`,
+        start: isAllDay ? startDate : `${startDate}T${v.start_time}`,
         end: calendarEnd,
-        allDay: Boolean(isMultiDay),
+        allDay: isAllDay,
         backgroundColor: STATUS_COLORS[v.status] || STATUS_COLORS.scheduled,
         textColor: '#0d0d1a',
         borderColor: 'transparent',
@@ -656,30 +662,14 @@ function Dashboard() {
               );
             }
 
-            // All-day row — used for multi-day visits in week/day view
+            // All-day row — used for multi-day and 24/7 Care visits in week/day view
             if (arg.event.allDay) {
               return (
-                <div style={{ padding: '0.1875rem 0.5rem 0.1875rem 0.25rem', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '0.375rem', width: '100%' }}>
-                  <div style={{
-                    width: '1.25rem',
-                    height: '1.25rem',
-                    borderRadius: '50%',
-                    background: '#2d3f8e',
-                    color: '#ffffff',
-                    fontSize: '0.5625rem',
-                    fontWeight: 700,
-                    fontFamily: 'Lora, serif',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    boxShadow: '0 0.0625rem 0.1875rem rgba(0,0,0,0.15)',
-                  }}>
-                    {arg.event.extendedProps.caregiverName
-                      ? arg.event.extendedProps.caregiverName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-                      : '?'}
-                  </div>
-                  <div style={{ overflow: 'hidden', minWidth: 0 }}>
+                <div style={{ padding: '0.1875rem 0.5rem 0.1875rem 0.375rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '0.0625rem', width: '100%', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
                     <div style={{
                       fontFamily: 'Lora, serif',
                       fontWeight: 700,
@@ -691,7 +681,13 @@ function Dashboard() {
                     }}>
                       {arg.event.extendedProps.caregiverName}
                     </div>
-                    {arg.event.extendedProps.clientName && (
+                  </div>
+                  {arg.event.extendedProps.clientName && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
                       <div style={{
                         fontFamily: 'Lora, serif',
                         fontWeight: 400,
@@ -703,60 +699,108 @@ function Dashboard() {
                       }}>
                         {arg.event.extendedProps.clientName}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               );
             }
 
-            // Week view grouped event — shows visit count and up to 2 caregiver names
+            // Week view grouped event — structured entries with dynamic overflow detection
             if (arg.event.extendedProps.isGroup) {
               const { count, groupVisits } = arg.event.extendedProps;
+
+              // Completion ratio — drives accent stripe and background gradient
+              const completedCount = groupVisits.filter(v => v.status === 'completed').length;
+              const allCompleted = completedCount === count;
+              const noneCompleted = completedCount === 0;
+              const splitPct = Math.round((completedCount / count) * 100);
+
+              const stripeColor = allCompleted
+                ? '#16a34a'
+                : noneCompleted
+                ? '#2d3f8e'
+                : `linear-gradient(to bottom, #16a34a ${splitPct}%, #2d3f8e ${splitPct}%)`;
+
+              const bgColor = allCompleted
+                ? 'rgba(22, 163, 74, 0.08)'
+                : noneCompleted
+                ? 'rgba(45, 63, 142, 0.08)'
+                : `linear-gradient(to bottom, rgba(22,163,74,0.08) ${splitPct}%, rgba(45,63,142,0.08) ${splitPct}%)`;
+
+              // Estimate available height in rem: slot is 2.5rem per 30 min
+              const durationMins = (arg.event.end - arg.event.start) / 60000;
+              const availRem = (durationMins / 30) * 2.5;
+              // Each entry is ~3.5rem (time + caregiver + client lines); 2rem overhead for padding + header + "+N more" line
+              const maxVisible = Math.max(1, Math.floor((availRem - 2.0) / 3.5));
+              const visibleVisits = groupVisits.slice(0, maxVisible);
+              const overflow = count - maxVisible;
+
               return (
                 <div style={{
-                  background: 'rgba(45, 63, 142, 0.13)',
-                  borderLeft: '0.1875rem solid #2d3f8e',
-                  borderRadius: '0 0.5rem 0.5rem 0',
                   height: '100%',
                   width: '100%',
                   overflow: 'hidden',
+                  borderRadius: '0 0.5rem 0.5rem 0',
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-start',
                   boxSizing: 'border-box',
-                  padding: '0.375rem 0.5rem',
-                  gap: '0.125rem',
                 }}>
-                  <div style={{ fontFamily: 'Lora, serif', fontWeight: 700, fontSize: '0.75rem', color: '#1a1a2e' }}>
-                    {count} Visits
+                  {/* Left accent stripe — solid or gradient based on completion ratio */}
+                  <div style={{ width: '0.1875rem', flexShrink: 0, background: stripeColor }} />
+                  {/* Content */}
+                  <div style={{
+                    flex: 1,
+                    background: bgColor,
+                    padding: '0.375rem 0.5rem',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    gap: '0.1875rem',
+                    minWidth: 0,
+                  }}>
+                    <div style={{ fontFamily: 'Lora, serif', fontWeight: 700, fontSize: '0.6875rem', color: '#5e6ea8', letterSpacing: '0.03em', marginBottom: '0.125rem' }}>
+                    {count} visits nearby
                   </div>
-                  {groupVisits.slice(0, 2).map((v, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.0625rem', overflow: 'hidden' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                        <span style={{ fontFamily: 'Lora, serif', fontWeight: 700, fontSize: '0.625rem', color: '#1a1a2e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {v.caregiver_name}
-                        </span>
+                  {visibleVisits.map((v, i) => (
+                      <div key={i} style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.0625rem',
+                        overflow: 'hidden',
+                        paddingBottom: i < visibleVisits.length - 1 ? '0.1875rem' : 0,
+                        borderBottom: i < visibleVisits.length - 1 ? '1px solid rgba(138,169,215,0.25)' : 'none',
+                      }}>
+                        {/* Time */}
+                        <div style={{ fontFamily: 'Lora, serif', fontWeight: 600, fontSize: '0.6875rem', color: '#484858', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {formatTime(v.start_time)} – {formatTime(v.end_time)}
+                        </div>
+                        {/* Caregiver */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2d3f8e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                          </svg>
+                          <span style={{ fontFamily: 'Lora, serif', fontWeight: 700, fontSize: '0.875rem', color: '#1a1a2e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {v.caregiver_name}
+                          </span>
+                        </div>
+                        {/* Client */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                          <span style={{ fontFamily: 'Lora, serif', fontWeight: 500, fontSize: '0.8125rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {v.client_name}
+                          </span>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', overflow: 'hidden' }}>
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6a6a8a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        <span style={{ fontFamily: 'Lora, serif', fontWeight: 400, fontSize: '0.5625rem', color: '#4a4a6a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {v.client_name} · {formatTime(v.start_time)}–{formatTime(v.end_time)}
-                        </span>
+                    ))}
+                    {overflow > 0 && (
+                      <div style={{ fontFamily: 'Lora, serif', fontWeight: 600, fontSize: '0.625rem', color: '#5e6ea8', marginTop: '0.0625rem' }}>
+                        +{overflow} more
                       </div>
-                    </div>
-                  ))}
-                  {/* Show overflow count if there are more than 2 caregivers in the group */}
-                  {groupVisits.length > 2 && (
-                    <div style={{ fontFamily: 'Lora, serif', fontWeight: 400, fontSize: '0.625rem', color: '#484858' }}>
-                      +{groupVisits.length - 2} more
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               );
             }
@@ -778,7 +822,7 @@ function Dashboard() {
             };
 
             const durationMins = (arg.event.end - arg.event.start) / 60000;
-            const showClientName = durationMins >= 60;
+            const showClientName = durationMins > 90;
             const showServiceType = durationMins >= 90;
 
             return (
@@ -885,6 +929,7 @@ function Dashboard() {
                   className="visit-tooltip-group-item"
                   onMouseEnter={(e) => handleGroupItemMouseEnter(e, v)}
                   onMouseLeave={handleGroupItemMouseLeave}
+                  onClick={() => { closeTooltips(); setSelectedVisit(v); }}
                 >
                   <div className="visit-tooltip-row" style={{ marginBottom: 0 }}>
                     <div className="visit-tooltip-avatar visit-tooltip-avatar--caregiver">

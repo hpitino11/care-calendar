@@ -22,8 +22,8 @@ const SERVICES = [
 // Returns an array of { value: "HH:MM", label: "H:MM AM/PM" } objects.
 function generateTimeOptions() {
   const options = [];
-  for (let hour = 6; hour <= 22; hour++) {
-    for (let min = 0; min < 60; min += 15) {
+  for (let hour = 0; hour <= 23; hour++) {
+    for (let min = 0; min < 60; min += 30) {
       const value = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
       const label = `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${String(min).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`;
       options.push({ value, label });
@@ -121,6 +121,16 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
     if (name === 'caregiver_id' || name === 'visit_date') {
       updated.start_time = '';
       updated.end_time = '';
+    }
+    // Auto-set full-day times for 24/7 Care (hidden from UI, sent to backend)
+    if (name === 'service_type') {
+      if (value === '24/7 Care') {
+        updated.start_time = '00:00';
+        updated.end_time = '23:30';
+      } else if (formData.service_type === '24/7 Care') {
+        updated.start_time = '';
+        updated.end_time = '';
+      }
     }
     // Clear end_time if it's no longer after the new start_time
     if (name === 'start_time' && formData.end_time && formData.end_time <= value) {
@@ -246,31 +256,35 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
           </div>
         )}
 
-        {/* Time selects use pre-generated 15-minute increment options */}
-        <div className="form-group">
-          <label>Start Time *</label>
-          <select name="start_time" value={formData.start_time} onChange={handleChange} required>
-            <option value="">Select start time</option>
-            {TIME_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} disabled={isStartBlocked(opt.value, bookedSlots)}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>End Time *</label>
-          <select name="end_time" value={formData.end_time} onChange={handleChange} required>
-            <option value="">Select end time</option>
-            {TIME_OPTIONS
-              .filter((opt) => !formData.start_time || opt.value > formData.start_time)
-              .map((opt) => (
-                <option key={opt.value} value={opt.value} disabled={isEndBlocked(opt.value, formData.start_time, bookedSlots)}>
-                  {opt.label}
-                </option>
-              ))}
-          </select>
-        </div>
+        {/* Time selects — hidden for 24/7 Care (times are set automatically) */}
+        {formData.service_type !== '24/7 Care' && (
+          <>
+            <div className="form-group">
+              <label>Start Time *</label>
+              <select name="start_time" value={formData.start_time} onChange={handleChange} required>
+                <option value="">Select start time</option>
+                {TIME_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value} disabled={isStartBlocked(opt.value, bookedSlots)}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>End Time *</label>
+              <select name="end_time" value={formData.end_time} onChange={handleChange} required>
+                <option value="">Select end time</option>
+                {TIME_OPTIONS
+                  .filter((opt) => !formData.start_time || opt.value > formData.start_time)
+                  .map((opt) => (
+                    <option key={opt.value} value={opt.value} disabled={isEndBlocked(opt.value, formData.start_time, bookedSlots)}>
+                      {opt.label}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </>
+        )}
 
         <div className="form-group">
           <label>Notes</label>

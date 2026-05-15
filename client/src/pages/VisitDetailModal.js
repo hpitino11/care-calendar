@@ -24,8 +24,8 @@ const SERVICES = [
 // Generates time options in 15-minute increments from 6:00 AM to 10:00 PM
 function generateTimeOptions() {
   const options = [];
-  for (let hour = 6; hour <= 22; hour++) {
-    for (let min = 0; min < 60; min += 15) {
+  for (let hour = 0; hour <= 23; hour++) {
+    for (let min = 0; min < 60; min += 30) {
       const value = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
       const label = `${hour > 12 ? hour - 12 : hour === 0 ? 12 : hour}:${String(min).padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`;
       options.push({ value, label });
@@ -169,9 +169,19 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...editForm, [name]: value };
-    if (name === 'caregiver_id' || name === 'visit_date') {
+    if (name === 'visit_date') {
       updated.start_time = '';
       updated.end_time = '';
+    }
+    // Auto-set full-day times for 24/7 Care (hidden from UI, sent to backend)
+    if (name === 'service_type') {
+      if (value === '24/7 Care') {
+        updated.start_time = '00:00';
+        updated.end_time = '23:30';
+      } else if (editForm.service_type === '24/7 Care') {
+        updated.start_time = '';
+        updated.end_time = '';
+      }
     }
     if (name === 'start_time' && editForm.end_time && editForm.end_time <= value) {
       updated.end_time = '';
@@ -302,30 +312,35 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
             </div>
           )}
 
-          <div className="form-group">
-            <label>Start Time *</label>
-            <select name="start_time" value={editForm.start_time} onChange={handleEditChange} required>
-              <option value="">Select start time</option>
-              {TIME_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} disabled={isStartBlocked(opt.value, bookedSlots)}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label>End Time *</label>
-            <select name="end_time" value={editForm.end_time} onChange={handleEditChange} required>
-              <option value="">Select end time</option>
-              {TIME_OPTIONS
-                .filter((opt) => !editForm.start_time || opt.value > editForm.start_time)
-                .map((opt) => (
-                  <option key={opt.value} value={opt.value} disabled={isEndBlocked(opt.value, editForm.start_time, bookedSlots)}>
-                    {opt.label}
-                  </option>
-                ))}
-            </select>
-          </div>
+          {/* Time selects — hidden for 24/7 Care (times are set automatically) */}
+          {editForm.service_type !== '24/7 Care' && (
+            <>
+              <div className="form-group">
+                <label>Start Time *</label>
+                <select name="start_time" value={editForm.start_time} onChange={handleEditChange} required>
+                  <option value="">Select start time</option>
+                  {TIME_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} disabled={isStartBlocked(opt.value, bookedSlots)}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>End Time *</label>
+                <select name="end_time" value={editForm.end_time} onChange={handleEditChange} required>
+                  <option value="">Select end time</option>
+                  {TIME_OPTIONS
+                    .filter((opt) => !editForm.start_time || opt.value > editForm.start_time)
+                    .map((opt) => (
+                      <option key={opt.value} value={opt.value} disabled={isEndBlocked(opt.value, editForm.start_time, bookedSlots)}>
+                        {opt.label}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </>
+          )}
           <div className="form-group">
             <label>Status</label>
             <select name="status" value={editForm.status} onChange={handleEditChange}>

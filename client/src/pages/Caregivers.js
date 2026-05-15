@@ -3,8 +3,6 @@ import Modal from '../components/Modal';
 import BASE_URL from '../api';
 import './Caregivers.css';
 
-// Formats a phone number string into (XXX) XXX-XXXX as the user types.
-// Non-digit characters are stripped and input is capped at 10 digits.
 function formatPhone(value) {
   const digits = value.replace(/\D/g, '').slice(0, 10);
   if (digits.length <= 3) return digits.length ? `(${digits}` : '';
@@ -12,22 +10,32 @@ function formatPhone(value) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
-// Capitalizes the first character of an email address as the user types
-function capitalizeEmail(value) {
-  if (!value) return '';
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function validateName(value) {
+  if (!value.trim()) return 'Name is required.';
+  if (!/^[a-zA-Z\s''-]+$/.test(value.trim())) return 'Name may only contain letters, spaces, hyphens, and apostrophes.';
+  return '';
 }
+
+function validateEmail(value) {
+  if (!value) return '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
+  return '';
+}
+
+const EMPTY_ERRORS = { name: '', email: '' };
 
 function Caregivers() {
   // ── State ──
   const [caregivers, setCaregivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [showModal, setShowModal] = useState(false); // controls Add Caregiver modal visibility
+  const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' }); // new caregiver form
-  const [editingCaregiver, setEditingCaregiver] = useState(null); // null when no edit modal is open
-  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' }); // edit caregiver form
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [formErrors, setFormErrors] = useState(EMPTY_ERRORS);
+  const [editingCaregiver, setEditingCaregiver] = useState(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', phone: '' });
+  const [editErrors, setEditErrors] = useState(EMPTY_ERRORS);
 
   // ── Data fetching ──
   const fetchCaregivers = async () => {
@@ -49,26 +57,38 @@ function Caregivers() {
   // ── Add form handlers ──
   const handleChange = (e) => {
     let { name, value } = e.target;
-    // Apply formatting as the user types
     if (name === 'phone') value = formatPhone(value);
-    if (name === 'email') value = capitalizeEmail(value);
     setFormData({ ...formData, [name]: value });
+    if (name === 'name') setFormErrors((prev) => ({ ...prev, name: validateName(value) }));
+    if (name === 'email') setFormErrors((prev) => ({ ...prev, email: validateEmail(value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const nameErr = validateName(formData.name);
+    const emailErr = validateEmail(formData.email);
+    if (nameErr || emailErr) {
+      setFormErrors({ name: nameErr, email: emailErr });
+      return;
+    }
     try {
       await fetch(`${BASE_URL}/api/caregivers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      setFormData({ name: '', email: '', phone: '' }); // reset form after successful submission
+      setFormData({ name: '', email: '', phone: '' });
+      setFormErrors(EMPTY_ERRORS);
       setShowModal(false);
       fetchCaregivers();
     } catch (err) {
       alert('Something went wrong. Please try again.');
     }
+  };
+
+  const handleCloseAdd = () => {
+    setShowModal(false);
+    setFormErrors(EMPTY_ERRORS);
   };
 
   // ── Delete handler ──
@@ -83,21 +103,28 @@ function Caregivers() {
   };
 
   // ── Edit form handlers ──
-  // Pre-populates the edit form with the selected caregiver's existing data
   const handleEditClick = (caregiver) => {
     setEditingCaregiver(caregiver);
     setEditForm({ name: caregiver.name, email: caregiver.email || '', phone: caregiver.phone || '' });
+    setEditErrors(EMPTY_ERRORS);
   };
 
   const handleEditChange = (e) => {
     let { name, value } = e.target;
     if (name === 'phone') value = formatPhone(value);
-    if (name === 'email') value = capitalizeEmail(value);
     setEditForm({ ...editForm, [name]: value });
+    if (name === 'name') setEditErrors((prev) => ({ ...prev, name: validateName(value) }));
+    if (name === 'email') setEditErrors((prev) => ({ ...prev, email: validateEmail(value) }));
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+    const nameErr = validateName(editForm.name);
+    const emailErr = validateEmail(editForm.email);
+    if (nameErr || emailErr) {
+      setEditErrors({ name: nameErr, email: emailErr });
+      return;
+    }
     try {
       await fetch(`${BASE_URL}/api/caregivers/${editingCaregiver.id}`, {
         method: 'PUT',
@@ -105,14 +132,19 @@ function Caregivers() {
         body: JSON.stringify(editForm),
       });
       setEditingCaregiver(null);
+      setEditErrors(EMPTY_ERRORS);
       fetchCaregivers();
     } catch (err) {
       alert('Something went wrong. Please try again.');
     }
   };
 
+  const handleCloseEdit = () => {
+    setEditingCaregiver(null);
+    setEditErrors(EMPTY_ERRORS);
+  };
+
   // ── Filtering ──
-  // Client-side search filter — matches on caregiver name
   const filtered = caregivers.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -149,7 +181,6 @@ function Caregivers() {
         <div className="caregiver-list">
           {filtered.map((cg) => (
             <div key={cg.id} className="caregiver-card">
-              {/* Avatar uses the first letter of the caregiver's name */}
               <div className="caregiver-avatar">
                 {cg.name.charAt(0).toUpperCase()}
               </div>
@@ -196,7 +227,7 @@ function Caregivers() {
 
       {/* Add Caregiver modal */}
       {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
+        <Modal onClose={handleCloseAdd}>
           <h2 className="modal-title">Add Caregiver</h2>
           <form onSubmit={handleSubmit} className="form">
             <div className="form-group">
@@ -208,6 +239,7 @@ function Caregivers() {
                 required
                 placeholder="Full name"
               />
+              {formErrors.name && <p className="field-error">{formErrors.name}</p>}
             </div>
             <div className="form-group">
               <label>Email</label>
@@ -217,6 +249,7 @@ function Caregivers() {
                 onChange={handleChange}
                 placeholder="email@example.com"
               />
+              {formErrors.email && <p className="field-error">{formErrors.email}</p>}
             </div>
             <div className="form-group">
               <label>Phone</label>
@@ -229,7 +262,7 @@ function Caregivers() {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Add Caregiver</button>
-              <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
+              <button type="button" className="btn-cancel" onClick={handleCloseAdd}>
                 Cancel
               </button>
             </div>
@@ -239,7 +272,7 @@ function Caregivers() {
 
       {/* Edit Caregiver modal */}
       {editingCaregiver && (
-        <Modal onClose={() => setEditingCaregiver(null)}>
+        <Modal onClose={handleCloseEdit}>
           <h2 className="modal-title">Edit Caregiver</h2>
           <form onSubmit={handleEditSubmit} className="form">
             <div className="form-group">
@@ -251,6 +284,7 @@ function Caregivers() {
                 required
                 placeholder="Full name"
               />
+              {editErrors.name && <p className="field-error">{editErrors.name}</p>}
             </div>
             <div className="form-group">
               <label>Email</label>
@@ -260,6 +294,7 @@ function Caregivers() {
                 onChange={handleEditChange}
                 placeholder="email@example.com"
               />
+              {editErrors.email && <p className="field-error">{editErrors.email}</p>}
             </div>
             <div className="form-group">
               <label>Phone</label>
@@ -272,7 +307,7 @@ function Caregivers() {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Save Changes</button>
-              <button type="button" className="btn-cancel" onClick={() => setEditingCaregiver(null)}>
+              <button type="button" className="btn-cancel" onClick={handleCloseEdit}>
                 Cancel
               </button>
             </div>

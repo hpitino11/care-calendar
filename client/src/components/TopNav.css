@@ -63,6 +63,12 @@
   }
 }
 
+/* Hide search bar while any modal is open */
+body.modal-open .topnav-search {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* ── Left spacer — mirrors right panel so search lands in the true center ── */
 .topnav-left {
   flex: 1;

@@ -7,6 +7,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .modal-card {
@@ -18,6 +19,7 @@
   position: relative;
   box-shadow: 0 1.25rem 3.75rem rgba(26, 26, 46, 0.2);
   animation: modalFadeIn 0.2s ease;
+  margin: 2rem auto;
 }
 
 @keyframes modalFadeIn {

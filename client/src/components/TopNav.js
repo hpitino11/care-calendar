@@ -10,26 +10,25 @@ function TopNav({ onMenuClick }) {
   const navigate = useNavigate();
   const searchRef = useRef(null);
 
-  // Load all data once so search works client-side without per-keystroke requests
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [visitsRes, caregiversRes, clientsRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/visits`),
-          fetch(`${BASE_URL}/api/caregivers`),
-          fetch(`${BASE_URL}/api/clients`),
-        ]);
-        setAllData({
-          visits: await visitsRes.json(),
-          caregivers: await caregiversRes.json(),
-          clients: await clientsRes.json(),
-        });
-      } catch (err) {
-        console.error('Search data failed to load', err);
-      }
-    };
-    fetchAll();
-  }, []);
+  const fetchAll = async () => {
+    try {
+      const [visitsRes, caregiversRes, clientsRes] = await Promise.all([
+        fetch(`${BASE_URL}/api/visits`),
+        fetch(`${BASE_URL}/api/caregivers`),
+        fetch(`${BASE_URL}/api/clients`),
+      ]);
+      setAllData({
+        visits: await visitsRes.json(),
+        caregivers: await caregiversRes.json(),
+        clients: await clientsRes.json(),
+      });
+    } catch (err) {
+      console.error('Search data failed to load', err);
+    }
+  };
+
+  // Load on mount
+  useEffect(() => { fetchAll(); }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -86,7 +85,7 @@ function TopNav({ onMenuClick }) {
             placeholder="Search visits, caregivers, clients..."
             value={query}
             onChange={(e) => { setQuery(e.target.value); setShowDropdown(true); }}
-            onFocus={() => setShowDropdown(true)}
+            onFocus={() => { setShowDropdown(true); fetchAll(); }}
           />
           {showDropdown && q && (
             <div className="topnav-search-dropdown">
