@@ -453,27 +453,6 @@ function Dashboard() {
     visits.filter((v) => v.status !== 'cancelled').map((v) => v.caregiver_id)
   ).size;
 
-  // Previous week (Sun–Sat) for trend badges
-  const prevWeekStart = new Date(weekStart);
-  prevWeekStart.setDate(weekStart.getDate() - 7);
-  const prevWeekEnd = new Date(weekEnd);
-  prevWeekEnd.setDate(weekEnd.getDate() - 7);
-  const prevWeekStartStr = toDateStr(prevWeekStart);
-  const prevWeekEndStr   = toDateStr(prevWeekEnd);
-
-  const prevWeekVisits = visits.filter((v) => visitOverlapsRange(v, prevWeekStartStr, prevWeekEndStr)).length;
-
-  const prevActiveCaregivers = new Set(
-    visits.filter((v) => visitOverlapsRange(v, prevWeekStartStr, prevWeekEndStr)).map((v) => v.caregiver_id)
-  ).size;
-
-  function pctChange(current, previous) {
-    if (previous === 0) return null;
-    return Math.round(((current - previous) / previous) * 100);
-  }
-
-  const weekPct = pctChange(weekVisits, prevWeekVisits);
-  const caregiverPct = pctChange(activeCaregivers, prevActiveCaregivers);
 
   if (loading) return <p className="state-loading">Loading...</p>;
   if (error)   return <p className="state-error">Something went wrong.</p>;
