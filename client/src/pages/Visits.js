@@ -96,19 +96,21 @@ function Visits() {
           <h1 className="page-title">Visits</h1>
           <p className="page-subtitle">Manage and track care visits</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowAddModal(true)}>
+      </div>
+
+      {/* Search bar + Schedule button */}
+      <div className="search-action-row">
+        <input
+          className="visits-search"
+          type="text"
+          placeholder="Search by caregiver or client name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button className="btn-primary btn-primary--blue" onClick={() => setShowAddModal(true)}>
           Schedule Visit
         </button>
       </div>
-
-      {/* Search bar */}
-      <input
-        className="visits-search"
-        type="text"
-        placeholder="Search by caregiver or client name..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
 
       {/* Status filter buttons */}
       <div className="filter-row">

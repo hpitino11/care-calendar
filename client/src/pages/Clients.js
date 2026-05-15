@@ -22,7 +22,14 @@ function validateEmail(value) {
   return '';
 }
 
-const EMPTY_ERRORS = { name: '', email: '' };
+function validatePhone(value) {
+  if (!value) return '';
+  const digits = value.replace(/\D/g, '');
+  if (digits.length !== 10) return 'Phone number must be 10 digits.';
+  return '';
+}
+
+const EMPTY_ERRORS = { name: '', email: '', phone: '' };
 
 function Clients() {
   // ── State ──
@@ -61,14 +68,16 @@ function Clients() {
     setFormData({ ...formData, [name]: value });
     if (name === 'name') setFormErrors((prev) => ({ ...prev, name: validateName(value) }));
     if (name === 'email') setFormErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    if (name === 'phone') setFormErrors((prev) => ({ ...prev, phone: validatePhone(value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const nameErr = validateName(formData.name);
     const emailErr = validateEmail(formData.email);
-    if (nameErr || emailErr) {
-      setFormErrors({ name: nameErr, email: emailErr });
+    const phoneErr = validatePhone(formData.phone);
+    if (nameErr || emailErr || phoneErr) {
+      setFormErrors({ name: nameErr, email: emailErr, phone: phoneErr });
       return;
     }
     try {
@@ -115,14 +124,16 @@ function Clients() {
     setEditForm({ ...editForm, [name]: value });
     if (name === 'name') setEditErrors((prev) => ({ ...prev, name: validateName(value) }));
     if (name === 'email') setEditErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    if (name === 'phone') setEditErrors((prev) => ({ ...prev, phone: validatePhone(value) }));
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     const nameErr = validateName(editForm.name);
     const emailErr = validateEmail(editForm.email);
-    if (nameErr || emailErr) {
-      setEditErrors({ name: nameErr, email: emailErr });
+    const phoneErr = validatePhone(editForm.phone);
+    if (nameErr || emailErr || phoneErr) {
+      setEditErrors({ name: nameErr, email: emailErr, phone: phoneErr });
       return;
     }
     try {
@@ -160,19 +171,21 @@ function Clients() {
           <h1 className="page-title">Clients</h1>
           <p className="page-subtitle">Manage your clients</p>
         </div>
+      </div>
+
+      {/* Search bar + Add button */}
+      <div className="search-action-row">
+        <input
+          type="text"
+          placeholder="Search clients..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="visits-search"
+        />
         <button className="btn-primary" onClick={() => setShowModal(true)}>
           + Add Client
         </button>
       </div>
-
-      {/* Search bar */}
-      <input
-        type="text"
-        placeholder="Search clients..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="visits-search"
-      />
 
       {/* Client list */}
       {filtered.length === 0 ? (
@@ -185,7 +198,13 @@ function Clients() {
                 {cl.name.charAt(0).toUpperCase()}
               </div>
               <div className="caregiver-info">
-                <h2 className="caregiver-name">{cl.name}</h2>
+                <h2 className="caregiver-name">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.3rem', verticalAlign: 'middle', flexShrink: 0 }}>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  {cl.name}
+                </h2>
                 {cl.email && (
                   <p className="caregiver-detail">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -259,6 +278,7 @@ function Clients() {
                 onChange={handleChange}
                 placeholder="(555) 000-0000"
               />
+              {formErrors.phone && <p className="field-error">{formErrors.phone}</p>}
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Add Client</button>
@@ -304,6 +324,7 @@ function Clients() {
                 onChange={handleEditChange}
                 placeholder="(555) 000-0000"
               />
+              {editErrors.phone && <p className="field-error">{editErrors.phone}</p>}
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Save Changes</button>

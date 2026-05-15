@@ -160,19 +160,21 @@ function Caregivers() {
           <h1 className="page-title">Caregivers</h1>
           <p className="page-subtitle">Manage your caregiving team</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowModal(true)}>
+      </div>
+
+      {/* Search bar + Add button */}
+      <div className="search-action-row">
+        <input
+          type="text"
+          placeholder="Search caregivers..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="visits-search"
+        />
+        <button className="btn-primary btn-primary--blue" onClick={() => setShowModal(true)}>
           + Add Caregiver
         </button>
       </div>
-
-      {/* Search bar */}
-      <input
-        type="text"
-        placeholder="Search caregivers..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="visits-search"
-      />
 
       {/* Caregiver list */}
       {filtered.length === 0 ? (
@@ -185,7 +187,12 @@ function Caregivers() {
                 {cg.name.charAt(0).toUpperCase()}
               </div>
               <div className="caregiver-info">
-                <h2 className="caregiver-name">{cg.name}</h2>
+                <h2 className="caregiver-name">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.3rem', verticalAlign: 'middle', flexShrink: 0 }}>
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  {cg.name}
+                </h2>
                 {cg.email && (
                   <p className="caregiver-detail">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
