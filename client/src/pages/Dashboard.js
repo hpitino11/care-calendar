@@ -358,53 +358,69 @@ function Dashboard() {
   };
 
   // ── Stats calculations ──
-  const todayVisits = visits.filter((v) => {
-    const vDate = v.visit_date ? v.visit_date.split('T')[0] : null;
-    return vDate === today;
-  }).length;
 
-  // Calculate the current week's Monday–Sunday range
+  // Helper: format a Date as 'YYYY-MM-DD' in local time (avoids UTC-shift bugs)
+  const toDateStr = (d) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
+  // Current week Sunday–Saturday
   const now = new Date();
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay()); // back to Sunday
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6); // forward to Saturday
 
-  const weekScheduled = visits.filter((v) => {
-    const d = new Date(v.visit_date);
-    return v.status === 'scheduled' && d >= monday && d <= sunday;
-  }).length;
+  const weekStartStr = toDateStr(weekStart);
+  const weekEndStr   = toDateStr(weekEnd);
+
+  const weekRangeLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+
+  // A visit counts if it isn't cancelled and overlaps the target date or range.
+  // Multi-day visits (24/7 care) count for every day they span.
+  const visitOverlapsDate = (v, dateStr) => {
+    const start = v.visit_date ? v.visit_date.split('T')[0] : null;
+    const end   = v.end_date   ? v.end_date.split('T')[0]   : start;
+    return v.status !== 'cancelled' && start <= dateStr && end >= dateStr;
+  };
+
+  const visitOverlapsRange = (v, rangeStart, rangeEnd) => {
+    const start = v.visit_date ? v.visit_date.split('T')[0] : null;
+    const end   = v.end_date   ? v.end_date.split('T')[0]   : start;
+    return v.status !== 'cancelled' && start <= rangeEnd && end >= rangeStart;
+  };
+
+  const todayVisits   = visits.filter((v) => visitOverlapsDate(v, today)).length;
+  const weekVisits    = visits.filter((v) => visitOverlapsRange(v, weekStartStr, weekEndStr)).length;
 
   // Count unique caregivers with at least one non-cancelled visit
   const activeCaregivers = new Set(
     visits.filter((v) => v.status !== 'cancelled').map((v) => v.caregiver_id)
   ).size;
 
-  // Previous week range for the trend badges
-  const prevMonday = new Date(monday);
-  prevMonday.setDate(monday.getDate() - 7);
-  const prevSunday = new Date(prevMonday);
-  prevSunday.setDate(prevMonday.getDate() + 6);
+  // Previous week (Sun–Sat) for trend badges
+  const prevWeekStart = new Date(weekStart);
+  prevWeekStart.setDate(weekStart.getDate() - 7);
+  const prevWeekEnd = new Date(weekEnd);
+  prevWeekEnd.setDate(weekEnd.getDate() - 7);
+  const prevWeekStartStr = toDateStr(prevWeekStart);
+  const prevWeekEndStr   = toDateStr(prevWeekEnd);
 
-  const prevWeekScheduled = visits.filter((v) => {
-    const d = new Date(v.visit_date + 'T00:00:00');
-    return v.status === 'scheduled' && d >= prevMonday && d <= prevSunday;
-  }).length;
+  const prevWeekVisits = visits.filter((v) => visitOverlapsRange(v, prevWeekStartStr, prevWeekEndStr)).length;
 
   const prevActiveCaregivers = new Set(
-    visits.filter((v) => {
-      const d = new Date(v.visit_date + 'T00:00:00');
-      return v.status !== 'cancelled' && d >= prevMonday && d <= prevSunday;
-    }).map((v) => v.caregiver_id)
+    visits.filter((v) => visitOverlapsRange(v, prevWeekStartStr, prevWeekEndStr)).map((v) => v.caregiver_id)
   ).size;
 
-  // Returns null if there is no previous week data to compare against
   function pctChange(current, previous) {
     if (previous === 0) return null;
     return Math.round(((current - previous) / previous) * 100);
   }
 
-  const weekPct = pctChange(weekScheduled, prevWeekScheduled);
+  const weekPct = pctChange(weekVisits, prevWeekVisits);
   const caregiverPct = pctChange(activeCaregivers, prevActiveCaregivers);
 
   if (loading) return <p className="state-loading">Loading...</p>;
@@ -423,7 +439,7 @@ function Dashboard() {
         </button>
       </div>
 
-      {/* Stats row — visits today, this week, and active caregivers */}
+      {/* Stats row — visits today, visits this week, and active caregivers */}
       <div className="stats-row">
         <div className="stat-card">
           <div className="stat-icon-wrap">
@@ -435,7 +451,7 @@ function Dashboard() {
           <div className="stat-body">
             <p className="stat-number">{todayVisits}</p>
             <p className="stat-label">Visits Today</p>
-            <p className="stat-sub">Scheduled for {dateShort}</p>
+            <p className="stat-sub">{dateShort}</p>
           </div>
           <div className="stat-watermark" aria-hidden="true">
             <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -452,9 +468,9 @@ function Dashboard() {
             </svg>
           </div>
           <div className="stat-body">
-            <p className="stat-number">{weekScheduled}</p>
-            <p className="stat-label">This Week</p>
-            <p className="stat-sub">Scheduled visits</p>
+            <p className="stat-number">{weekVisits}</p>
+            <p className="stat-label">Visits This Week</p>
+            <p className="stat-sub">{weekRangeLabel}</p>
             {weekPct !== null && (
               <span className={`stat-change ${weekPct >= 0 ? 'stat-change--pos' : 'stat-change--neg'}`}>
                 {weekPct > 0 ? '+' : ''}{weekPct}% vs last week
