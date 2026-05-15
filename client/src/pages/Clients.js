@@ -156,7 +156,7 @@ function Clients() {
           {filtered.map((cl) => (
             <div key={cl.id} className="caregiver-card">
               {/* Avatar uses the first letter of the client's name */}
-              <div className="caregiver-avatar">
+              <div className="caregiver-avatar client-avatar">
                 {cl.name.charAt(0).toUpperCase()}
               </div>
               <div className="caregiver-info">

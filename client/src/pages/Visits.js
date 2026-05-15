@@ -129,7 +129,7 @@ function Visits() {
                   // Clicking any visit row opens the detail modal
                   <div
                     key={visit.id}
-                    className="visit-row"
+                    className={`visit-row${visit.status === 'cancelled' ? ' visit-row--cancelled' : ''}`}
                     onClick={() => setSelectedVisit(visit)}
                   >
                     {/* Date block — shows a range for multi-day visits */}
