@@ -18,8 +18,21 @@ async function checkCaregiverConflict(caregiver_id, visit_date, end_date, start_
   return result.rows.length > 0;
 }
 
+// Marks any scheduled visit as completed once today is past its end date.
+// Runs before every GET /api/visits so statuses are always up to date.
+async function autoCompleteVisits() {
+  await pool.query(`
+    UPDATE visits
+    SET status = 'completed'
+    WHERE status = 'scheduled'
+      AND COALESCE(end_date, visit_date) < CURRENT_DATE
+  `);
+}
+
 const getAllVisits = async (req, res, next) => {
   try {
+    await autoCompleteVisits();
+
     // Join caregivers and clients so the response includes names, not just IDs
     const result = await pool.query(`
       SELECT
