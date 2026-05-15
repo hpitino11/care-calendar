@@ -35,6 +35,16 @@ function formatTime(timeStr) {
   return `${display}:${m} ${ampm}`;
 }
 
+// Compact time label for month view pills: "9:00am", "9:30am", "1:00pm", etc.
+function formatTimeShort(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':');
+  const hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? 'pm' : 'am';
+  const display = hour % 12 || 12;
+  return `${display}:${m}${ampm}`;
+}
+
 // Calculates and formats the duration between two HH:MM time strings
 function formatDuration(startTime, endTime) {
   if (!startTime || !endTime) return '';
@@ -519,17 +529,21 @@ function Dashboard() {
           eventContent={(arg) => {
             const isMonthView = arg.view.type === 'dayGridMonth';
 
-            // Month view — pill with avatar initials + caregiver name
+            // Month view — pill with avatar initials + caregiver name + time right-aligned
             if (isMonthView) {
               const initials = arg.event.extendedProps.caregiverName
                 ? arg.event.extendedProps.caregiverName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
                 : '?';
+              const visit = arg.event.extendedProps.visit;
+              const timeLabel = visit?.start_time
+                ? `${formatTimeShort(visit.start_time)}–${formatTimeShort(visit.end_time)}`
+                : '';
               return (
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.375rem',
-                  padding: '0.1875rem 0.5rem 0.1875rem 0.25rem',
+                  padding: '0.1875rem 0.4rem 0.1875rem 0.25rem',
                   width: '100%',
                   overflow: 'hidden',
                 }}>
@@ -558,9 +572,24 @@ function Dashboard() {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    flex: 1,
+                    minWidth: 0,
                   }}>
                     {arg.event.extendedProps.caregiverName}
                   </span>
+                  {timeLabel && (
+                    <span style={{
+                      flexShrink: 0,
+                      fontFamily: 'Spartan, sans-serif',
+                      fontWeight: 600,
+                      fontSize: '0.5625rem',
+                      color: '#5e6ea8',
+                      whiteSpace: 'nowrap',
+                      letterSpacing: '0.01em',
+                    }}>
+                      {timeLabel}
+                    </span>
+                  )}
                 </div>
               );
             }

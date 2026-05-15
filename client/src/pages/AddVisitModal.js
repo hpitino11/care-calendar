@@ -248,14 +248,11 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
           <label>Start Time *</label>
           <select name="start_time" value={formData.start_time} onChange={handleChange} required>
             <option value="">Select start time</option>
-            {TIME_OPTIONS.map((opt) => {
-              const blocked = isStartBlocked(opt.value, bookedSlots);
-              return (
-                <option key={opt.value} value={opt.value} disabled={blocked}>
-                  {opt.label}{blocked ? ' — already booked' : ''}
-                </option>
-              );
-            })}
+            {TIME_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value} disabled={isStartBlocked(opt.value, bookedSlots)}>
+                {opt.label}
+              </option>
+            ))}
           </select>
         </div>
         <div className="form-group">
@@ -264,14 +261,11 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
             <option value="">Select end time</option>
             {TIME_OPTIONS
               .filter((opt) => !formData.start_time || opt.value > formData.start_time)
-              .map((opt) => {
-                const blocked = isEndBlocked(opt.value, formData.start_time, bookedSlots);
-                return (
-                  <option key={opt.value} value={opt.value} disabled={blocked}>
-                    {opt.label}{blocked ? ' — conflict' : ''}
-                  </option>
-                );
-              })}
+              .map((opt) => (
+                <option key={opt.value} value={opt.value} disabled={isEndBlocked(opt.value, formData.start_time, bookedSlots)}>
+                  {opt.label}
+                </option>
+              ))}
           </select>
         </div>
 

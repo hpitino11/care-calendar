@@ -42,6 +42,11 @@
   color: #f14e4b;
 }
 
+option:disabled {
+  color: #aaa;
+  text-decoration: line-through;
+}
+
 .form-conflict-error {
   background: rgba(241, 78, 75, 0.07);
   border: 1px solid rgba(241, 78, 75, 0.3);

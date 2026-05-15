@@ -136,7 +136,7 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
       }
     };
     fetchSlots();
-  }, [editMode, editForm.caregiver_id, editForm.visit_date]);
+  }, [editMode, editForm.caregiver_id, editForm.visit_date, visit.start_time, visit.end_time]);
 
   // ── Action handlers ──
 
@@ -306,14 +306,11 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
             <label>Start Time *</label>
             <select name="start_time" value={editForm.start_time} onChange={handleEditChange} required>
               <option value="">Select start time</option>
-              {TIME_OPTIONS.map((opt) => {
-                const blocked = isStartBlocked(opt.value, bookedSlots);
-                return (
-                  <option key={opt.value} value={opt.value} disabled={blocked}>
-                    {opt.label}{blocked ? ' — already booked' : ''}
-                  </option>
-                );
-              })}
+              {TIME_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value} disabled={isStartBlocked(opt.value, bookedSlots)}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -322,14 +319,11 @@ function VisitDetailModal({ visit, onClose, onSuccess }) {
               <option value="">Select end time</option>
               {TIME_OPTIONS
                 .filter((opt) => !editForm.start_time || opt.value > editForm.start_time)
-                .map((opt) => {
-                  const blocked = isEndBlocked(opt.value, editForm.start_time, bookedSlots);
-                  return (
-                    <option key={opt.value} value={opt.value} disabled={blocked}>
-                      {opt.label}{blocked ? ' — conflict' : ''}
-                    </option>
-                  );
-                })}
+                .map((opt) => (
+                  <option key={opt.value} value={opt.value} disabled={isEndBlocked(opt.value, editForm.start_time, bookedSlots)}>
+                    {opt.label}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="form-group">
