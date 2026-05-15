@@ -43,7 +43,7 @@
   padding: 0.75rem 1.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
   cursor: pointer;
   box-shadow: 0 0.25rem 1rem rgba(241, 78, 75, 0.35);
   transition: all 0.2s ease;
@@ -536,7 +536,7 @@
   color: #2d3f8e;
   font-size: 0.8125rem;
   font-weight: 700;
-  font-family: 'Spartan', sans-serif;
+  font-family: 'Lora', serif;
   cursor: pointer;
   transition: background 0.15s;
 }

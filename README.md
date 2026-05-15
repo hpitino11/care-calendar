@@ -152,6 +152,7 @@ The frontend runs on `http://localhost:3000` and proxies API requests to the bac
 
 - API endpoints were tested using :contentReference[oaicite:0]{index=0} to verify CRUD functionality and request/response handling
 - Accessibility and performance checks were performed using :contentReference[oaicite:1]{index=1}, with focus on accessibility best practices and responsive usability
+- Typography and UI spacing were designed with ADA accessibility considerations in mind, using clean, highly legible fonts and scalable rem-based sizing to improve readability across devices
 
 ## Production Considerations
 
