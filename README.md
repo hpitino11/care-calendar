@@ -168,7 +168,6 @@ This dashboard is intentionally scoped as a technical demo. A production deploym
 
 - **Authentication** - login flow with session management or JWT tokens to restrict access to authorized admins only
 - **Role-based access control** - different permission levels for admins, supervisors, and read-only viewers
-- **HTTPS** - all API communication over TLS
 - **Input sanitization** - server-side validation beyond the current format checks
 - **Rate limiting** - prevent abuse of the public API endpoints
 - **Audit logging** - track who created, edited, or deleted records and when
