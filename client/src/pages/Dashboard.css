@@ -572,14 +572,27 @@
     font-size: 0.8125rem;
   }
 
+  /* Allow the dashboard to scroll naturally instead of clipping */
+  .dashboard-root {
+    overflow: visible;
+  }
+
   .stats-row {
     flex-direction: column;
     gap: 0.75rem;
   }
 
   .stat-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     min-height: auto;
     padding: 1.125rem 1.25rem;
+  }
+
+  .stat-label {
+    white-space: normal;
+    overflow: visible;
   }
 
   .stat-number {
@@ -590,7 +603,10 @@
     display: none;
   }
 
+  /* Give the calendar a fixed height instead of trying to fill remaining space */
   .calendar-wrapper {
+    flex: none;
+    min-height: 26rem;
     padding: 0.875rem 0.625rem;
     border-radius: 1rem;
   }

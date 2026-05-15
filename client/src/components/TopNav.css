@@ -31,38 +31,6 @@
   color: #f14e4b;
 }
 
-@media (max-width: 768px) {
-  .topnav {
-    padding: 0 1rem;
-    gap: 0.625rem;
-  }
-
-  .topnav-menu-btn {
-    display: flex;
-  }
-
-  .topnav-left {
-    display: none;
-  }
-
-  .topnav-search {
-    flex: 1;
-  }
-
-  .topnav-search-box {
-    width: 100%;
-  }
-
-  .topnav-user-name {
-    display: none;
-  }
-
-  .topnav-right {
-    flex: 0;
-    padding: 0;
-  }
-}
-
 /* Hide search bar while any modal is open */
 body.modal-open .topnav-search {
   visibility: hidden;
@@ -266,4 +234,38 @@ body.modal-open .topnav-search {
   font-weight: 600;
   color: #2d1f1a;
   white-space: nowrap;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .topnav {
+    padding: 0 1rem;
+    gap: 0.625rem;
+  }
+
+  .topnav-menu-btn {
+    display: flex;
+  }
+
+  .topnav-left {
+    display: none;
+  }
+
+  .topnav-search {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .topnav-search-box {
+    width: 100%;
+  }
+
+  .topnav-user-name {
+    display: none;
+  }
+
+  .topnav-right {
+    flex: 0;
+    padding: 0;
+  }
 }

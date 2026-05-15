@@ -21,6 +21,7 @@
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
+    width: min(var(--sidebar-width), 80vw);
   }
   .sidebar-open .sidebar {
     transform: translateX(0);
