@@ -17,14 +17,14 @@ function validateName(value) {
 }
 
 function validateEmail(value) {
-  if (!value) return '';
+  if (!value.trim()) return 'Email is required.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
   return '';
 }
 
 function validatePhone(value) {
-  if (!value) return '';
   const digits = value.replace(/\D/g, '');
+  if (!digits) return 'Phone number is required.';
   if (digits.length !== 10) return 'Phone number must be 10 digits.';
   return '';
 }
@@ -261,7 +261,7 @@ function Clients() {
               {formErrors.name && <p className="field-error">{formErrors.name}</p>}
             </div>
             <div className="form-group">
-              <label>Email</label>
+              <label>Email *</label>
               <input
                 name="email"
                 value={formData.email}
@@ -271,7 +271,7 @@ function Clients() {
               {formErrors.email && <p className="field-error">{formErrors.email}</p>}
             </div>
             <div className="form-group">
-              <label>Phone</label>
+              <label>Phone *</label>
               <input
                 name="phone"
                 value={formData.phone}
@@ -307,7 +307,7 @@ function Clients() {
               {editErrors.name && <p className="field-error">{editErrors.name}</p>}
             </div>
             <div className="form-group">
-              <label>Email</label>
+              <label>Email *</label>
               <input
                 name="email"
                 value={editForm.email}
@@ -317,7 +317,7 @@ function Clients() {
               {editErrors.email && <p className="field-error">{editErrors.email}</p>}
             </div>
             <div className="form-group">
-              <label>Phone</label>
+              <label>Phone *</label>
               <input
                 name="phone"
                 value={editForm.phone}

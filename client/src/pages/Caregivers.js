@@ -17,12 +17,19 @@ function validateName(value) {
 }
 
 function validateEmail(value) {
-  if (!value) return '';
+  if (!value.trim()) return 'Email is required.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
   return '';
 }
 
-const EMPTY_ERRORS = { name: '', email: '' };
+function validatePhone(value) {
+  const digits = value.replace(/\D/g, '');
+  if (!digits) return 'Phone number is required.';
+  if (digits.length !== 10) return 'Phone number must be 10 digits.';
+  return '';
+}
+
+const EMPTY_ERRORS = { name: '', email: '', phone: '' };
 
 function Caregivers() {
   // ── State ──
@@ -61,14 +68,16 @@ function Caregivers() {
     setFormData({ ...formData, [name]: value });
     if (name === 'name') setFormErrors((prev) => ({ ...prev, name: validateName(value) }));
     if (name === 'email') setFormErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    if (name === 'phone') setFormErrors((prev) => ({ ...prev, phone: validatePhone(value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const nameErr = validateName(formData.name);
     const emailErr = validateEmail(formData.email);
-    if (nameErr || emailErr) {
-      setFormErrors({ name: nameErr, email: emailErr });
+    const phoneErr = validatePhone(formData.phone);
+    if (nameErr || emailErr || phoneErr) {
+      setFormErrors({ name: nameErr, email: emailErr, phone: phoneErr });
       return;
     }
     try {
@@ -115,14 +124,16 @@ function Caregivers() {
     setEditForm({ ...editForm, [name]: value });
     if (name === 'name') setEditErrors((prev) => ({ ...prev, name: validateName(value) }));
     if (name === 'email') setEditErrors((prev) => ({ ...prev, email: validateEmail(value) }));
+    if (name === 'phone') setEditErrors((prev) => ({ ...prev, phone: validatePhone(value) }));
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     const nameErr = validateName(editForm.name);
     const emailErr = validateEmail(editForm.email);
-    if (nameErr || emailErr) {
-      setEditErrors({ name: nameErr, email: emailErr });
+    const phoneErr = validatePhone(editForm.phone);
+    if (nameErr || emailErr || phoneErr) {
+      setEditErrors({ name: nameErr, email: emailErr, phone: phoneErr });
       return;
     }
     try {
@@ -249,7 +260,7 @@ function Caregivers() {
               {formErrors.name && <p className="field-error">{formErrors.name}</p>}
             </div>
             <div className="form-group">
-              <label>Email</label>
+              <label>Email *</label>
               <input
                 name="email"
                 value={formData.email}
@@ -259,13 +270,14 @@ function Caregivers() {
               {formErrors.email && <p className="field-error">{formErrors.email}</p>}
             </div>
             <div className="form-group">
-              <label>Phone</label>
+              <label>Phone *</label>
               <input
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="(555) 000-0000"
               />
+              {formErrors.phone && <p className="field-error">{formErrors.phone}</p>}
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Add Caregiver</button>
@@ -294,7 +306,7 @@ function Caregivers() {
               {editErrors.name && <p className="field-error">{editErrors.name}</p>}
             </div>
             <div className="form-group">
-              <label>Email</label>
+              <label>Email *</label>
               <input
                 name="email"
                 value={editForm.email}
@@ -304,13 +316,14 @@ function Caregivers() {
               {editErrors.email && <p className="field-error">{editErrors.email}</p>}
             </div>
             <div className="form-group">
-              <label>Phone</label>
+              <label>Phone *</label>
               <input
                 name="phone"
                 value={editForm.phone}
                 onChange={handleEditChange}
                 placeholder="(555) 000-0000"
               />
+              {editErrors.phone && <p className="field-error">{editErrors.phone}</p>}
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-submit">Save Changes</button>
