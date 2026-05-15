@@ -92,7 +92,10 @@ function Visits() {
     <div>
       {/* Page header */}
       <div className="page-header">
-        <h1 className="page-title">Visits</h1>
+        <div>
+          <h1 className="page-title">Visits</h1>
+          <p className="page-subtitle">Manage and track care visits</p>
+        </div>
         <button className="btn-primary" onClick={() => setShowAddModal(true)}>
           Schedule Visit
         </button>
