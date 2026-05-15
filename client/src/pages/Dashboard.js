@@ -45,6 +45,14 @@ function formatTimeShort(timeStr) {
   return `${display}:${m}${ampm}`;
 }
 
+// Formats a Date as 'YYYY-MM-DD' in local time — avoids UTC-shift bugs from toISOString()
+function toDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 // Calculates and formats the duration between two HH:MM time strings
 function formatDuration(startTime, endTime) {
   if (!startTime || !endTime) return '';
@@ -57,6 +65,20 @@ function formatDuration(startTime, endTime) {
   if (hours === 0) return `${mins}m`;
   if (mins === 0) return `${hours}h`;
   return `${hours}h ${mins}m`;
+}
+
+// Returns a human-readable duration for a visit — day count for multi-day, hours for single-day
+function formatVisitDuration(visit) {
+  const startDate = visit.visit_date ? visit.visit_date.split('T')[0] : null;
+  const endDate = visit.end_date ? visit.end_date.split('T')[0] : null;
+  const isMultiDay = endDate && endDate !== startDate;
+  if (isMultiDay) {
+    const days = Math.round(
+      (new Date(endDate + 'T00:00:00') - new Date(startDate + 'T00:00:00')) / 86400000
+    ) + 1;
+    return `${days} ${days === 1 ? 'day' : 'days'}`;
+  }
+  return formatDuration(visit.start_time, visit.end_time);
 }
 
 // Groups overlapping or close (≤30 min gap) timed events per day for the week view.
@@ -125,7 +147,7 @@ function groupWeekViewEvents(events) {
 }
 
 // Shared single-visit tooltip content — used for both direct hover and group item branch
-function VisitTooltipBody({ visit, onViewDetails }) {
+function VisitTooltipBody({ visit }) {
   return (
     <>
       <p className="visit-tooltip-time">
@@ -161,7 +183,7 @@ function VisitTooltipBody({ visit, onViewDetails }) {
       <div className="visit-tooltip-row">
         <div className="visit-tooltip-icon-wrap">⏱</div>
         <div>
-          <p className="visit-tooltip-name">{formatDuration(visit.start_time, visit.end_time)}</p>
+          <p className="visit-tooltip-name">{formatVisitDuration(visit)}</p>
           <p className="visit-tooltip-label">Duration</p>
         </div>
       </div>
@@ -174,9 +196,6 @@ function VisitTooltipBody({ visit, onViewDetails }) {
           <p className="visit-tooltip-label">Status</p>
         </div>
       </div>
-      <button className="visit-tooltip-details-btn" onClick={onViewDetails}>
-        View details <span>›</span>
-      </button>
     </>
   );
 }
@@ -194,6 +213,8 @@ function Dashboard() {
   const [currentView, setCurrentView] = useState('dayGridMonth'); // tracks active calendar view
   const tooltipTimeout = useRef(null);
   const subTooltipTimeout = useRef(null);
+  const pendingTooltipRef = useRef(null); // hoverIntent timer — cancels if mouse leaves quickly
+  const tooltipOpenRef = useRef(false);   // tracks whether a tooltip is visible (for hoverIntent)
   // Prevents other calendar events from hijacking the tooltip while the user is reading it
   const mouseOnTooltip = useRef(false);
 
@@ -215,7 +236,7 @@ function Dashboard() {
   }, []);
 
   // ── Date/time helpers ──
-  const today = new Date().toISOString().split('T')[0];
+  const today = toDateStr(new Date());
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning, Admin 👋' : hour < 17 ? 'Good afternoon, Admin 👋' : 'Good evening, Admin 👋';
@@ -285,20 +306,38 @@ function Dashboard() {
 
   // ── Tooltip handlers ──
   const handleEventMouseEnter = (info) => {
-    // Don't hijack the tooltip while the user's mouse is on it — they may be reading it
     if (mouseOnTooltip.current) return;
     clearTimeout(tooltipTimeout.current);
-    const { x, y } = calcTooltipPos(info.el.getBoundingClientRect());
-    if (info.event.extendedProps.isGroup) {
-      setTooltip({ x, y, isGroup: true, groupVisits: info.event.extendedProps.groupVisits });
+    clearTimeout(pendingTooltipRef.current);
+
+    const show = () => {
+      const { x, y } = calcTooltipPos(info.el.getBoundingClientRect());
+      if (info.event.extendedProps.isGroup) {
+        setTooltip({ x, y, isGroup: true, groupVisits: info.event.extendedProps.groupVisits });
+      } else {
+        setTooltip({ x, y, visit: info.event.extendedProps.visit });
+      }
+      tooltipOpenRef.current = true;
+    };
+
+    // When another tooltip is already open, wait briefly before switching so that
+    // brushing past a neighboring card while moving toward the tooltip doesn't hijack it
+    if (tooltipOpenRef.current) {
+      pendingTooltipRef.current = setTimeout(show, 150);
     } else {
-      setTooltip({ x, y, visit: info.event.extendedProps.visit });
+      show();
     }
   };
 
   // 400 ms grace period — enough time to move the mouse from a small pill to the tooltip
   const handleEventMouseLeave = () => {
-    tooltipTimeout.current = setTimeout(() => { setTooltip(null); setSubTooltip(null); }, 400);
+    clearTimeout(pendingTooltipRef.current);
+    tooltipTimeout.current = setTimeout(() => {
+      mouseOnTooltip.current = false; // always reset — prevents stuck state if mouse returned to the card
+      tooltipOpenRef.current = false;
+      setTooltip(null);
+      setSubTooltip(null);
+    }, 400);
   };
 
   const handleTooltipMouseEnter = () => {
@@ -308,9 +347,12 @@ function Dashboard() {
   };
   const handleTooltipMouseLeave = () => {
     mouseOnTooltip.current = false;
-    clearTimeout(subTooltipTimeout.current);
-    setSubTooltip(null);
-    tooltipTimeout.current = setTimeout(() => setTooltip(null), 150);
+    // Give time to reach the sub-tooltip before closing either tooltip
+    subTooltipTimeout.current = setTimeout(() => setSubTooltip(null), 300);
+    tooltipTimeout.current = setTimeout(() => {
+      tooltipOpenRef.current = false;
+      setTooltip(null);
+    }, 300);
   };
 
   // ── Group-item hover → branching sub-tooltip ──
@@ -321,7 +363,7 @@ function Dashboard() {
     setSubTooltip({ x, y, visit });
   };
   const handleGroupItemMouseLeave = () => {
-    subTooltipTimeout.current = setTimeout(() => setSubTooltip(null), 150);
+    subTooltipTimeout.current = setTimeout(() => setSubTooltip(null), 300);
   };
   const handleSubTooltipMouseEnter = () => {
     mouseOnTooltip.current = true;
@@ -331,7 +373,10 @@ function Dashboard() {
   const handleSubTooltipMouseLeave = () => {
     mouseOnTooltip.current = false;
     setSubTooltip(null);
-    tooltipTimeout.current = setTimeout(() => setTooltip(null), 150);
+    tooltipTimeout.current = setTimeout(() => {
+      tooltipOpenRef.current = false;
+      setTooltip(null);
+    }, 150);
   };
 
   // Clicking an empty date slot pre-fills the date in the add modal
@@ -344,8 +389,10 @@ function Dashboard() {
   // so mouseOnTooltip doesn't stay stuck true and block future hovers
   const closeTooltips = () => {
     mouseOnTooltip.current = false;
+    tooltipOpenRef.current = false;
     clearTimeout(tooltipTimeout.current);
     clearTimeout(subTooltipTimeout.current);
+    clearTimeout(pendingTooltipRef.current);
     setTooltip(null);
     setSubTooltip(null);
   };
@@ -358,14 +405,6 @@ function Dashboard() {
   };
 
   // ── Stats calculations ──
-
-  // Helper: format a Date as 'YYYY-MM-DD' in local time (avoids UTC-shift bugs)
-  const toDateStr = (d) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
 
   // Current week Sunday–Saturday
   const now = new Date();
@@ -427,7 +466,7 @@ function Dashboard() {
   if (error)   return <p className="state-error">Something went wrong.</p>;
 
   return (
-    <div>
+    <div className="dashboard-root">
       {/* Page header — greeting + quick-add button */}
       <div className="dash-header">
         <div className="dash-header-left">
@@ -784,7 +823,7 @@ function Dashboard() {
             );
           }}
           stickyHeaderDates={false}
-          height="auto"
+          height="100%"
         />
       </div>
 
@@ -839,10 +878,7 @@ function Dashboard() {
               ))}
             </>
           ) : (
-            <VisitTooltipBody
-              visit={tooltip.visit}
-              onViewDetails={() => { setSelectedVisit(tooltip.visit); closeTooltips(); }}
-            />
+            <VisitTooltipBody visit={tooltip.visit} />
           )}
         </div>
       )}
@@ -855,10 +891,7 @@ function Dashboard() {
           onMouseEnter={handleSubTooltipMouseEnter}
           onMouseLeave={handleSubTooltipMouseLeave}
         >
-          <VisitTooltipBody
-            visit={subTooltip.visit}
-            onViewDetails={() => { setSelectedVisit(subTooltip.visit); closeTooltips(); }}
-          />
+          <VisitTooltipBody visit={subTooltip.visit} />
         </div>
       )}
     </div>
