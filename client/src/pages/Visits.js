@@ -62,7 +62,9 @@ function Visits() {
   // ── Filtering ──
   // Apply search and status filter together before grouping by date
   const filtered = visits.filter((v) => {
-    const matchesSearch = v.caregiver_name?.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      v.caregiver_name?.toLowerCase().includes(search.toLowerCase()) ||
+      v.client_name?.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = activeFilter === 'All' || v.status === activeFilter;
     return matchesSearch && matchesFilter;
   });
@@ -93,7 +95,7 @@ function Visits() {
       <input
         className="visits-search"
         type="text"
-        placeholder="Search by caregiver name..."
+        placeholder="Search by caregiver or client name..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />

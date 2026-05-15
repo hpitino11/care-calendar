@@ -295,7 +295,7 @@ function Dashboard() {
   const weekViewEvents = groupWeekViewEvents(calendarEvents);
 
   // ── Tooltip positioning helper ──
-  const calcTooltipPos = (rect, width = 276, height = 300) => {
+  const calcTooltipPos = (rect, width = 276, height = 360) => {
     const sidebarEl = document.querySelector('.sidebar');
     const sidebarWidth = (sidebarEl?.getBoundingClientRect().width ?? 240) + 16;
     let x = rect.right + 12;
@@ -303,6 +303,7 @@ function Dashboard() {
     x = Math.max(x, sidebarWidth);
     let y = rect.top;
     if (y + height > window.innerHeight - 16) y = window.innerHeight - height - 16;
+    y = Math.max(y, 8);
     return { x, y };
   };
 
@@ -313,10 +314,14 @@ function Dashboard() {
     clearTimeout(pendingTooltipRef.current);
 
     const show = () => {
-      const { x, y } = calcTooltipPos(info.el.getBoundingClientRect());
+      const rect = info.el.getBoundingClientRect();
       if (info.event.extendedProps.isGroup) {
-        setTooltip({ x, y, isGroup: true, groupVisits: info.event.extendedProps.groupVisits });
+        const groupVisits = info.event.extendedProps.groupVisits;
+        const estimatedHeight = 48 + groupVisits.length * 72;
+        const { x, y } = calcTooltipPos(rect, 276, estimatedHeight);
+        setTooltip({ x, y, isGroup: true, groupVisits });
       } else {
+        const { x, y } = calcTooltipPos(rect, 276, 280);
         setTooltip({ x, y, visit: info.event.extendedProps.visit });
       }
       tooltipOpenRef.current = true;

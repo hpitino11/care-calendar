@@ -26,7 +26,7 @@ Care Calendar gives administrators a centralized view of a caregiving operation:
 ### Visits
 - Full visit list with search, pagination, and status filtering
 - Create visits with caregiver, client, service type, date/time, and optional multi-day end date
-- Edit visit details and update status (Scheduled → In Progress → Completed / Cancelled)
+- Edit visit details and update status (Scheduled → Completed / Cancelled)
 - Multi-day visits display as spanning blocks in the calendar
 
 ### Caregivers
@@ -150,8 +150,8 @@ The frontend runs on `http://localhost:3000` and proxies API requests to the bac
 
 ## Testing & Validation
 
-- API endpoints were tested using :contentReference[oaicite:0]{index=0} to verify CRUD functionality and request/response handling
-- Accessibility and performance checks were performed using :contentReference[oaicite:1]{index=1}, with focus on accessibility best practices and responsive usability
+- API endpoints were tested using Postman to verify CRUD functionality and request/response handling
+- Accessibility and performance checks were performed using Google Lighthouse, with focus on accessibility best practices and responsive usability
 - Typography and UI spacing were designed with ADA accessibility considerations in mind, using clean, highly legible fonts and scalable rem-based sizing to improve readability across devices
 
 ## Production Considerations

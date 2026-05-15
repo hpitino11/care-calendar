@@ -58,6 +58,7 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
   // ── State ──
   const [caregivers, setCaregivers] = useState([]);
   const [clients, setClients] = useState([]);
+  const [loadingDropdowns, setLoadingDropdowns] = useState(true);
   const [bookedSlots, setBookedSlots] = useState([]);
   const [isMultiDay, setIsMultiDay] = useState(false); // toggles end date field visibility
   const [dateError, setDateError] = useState('');
@@ -86,6 +87,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
         setClients(await clRes.json());
       } catch (err) {
         console.error('Failed to load dropdowns', err);
+      } finally {
+        setLoadingDropdowns(false);
       }
     };
     fetchDropdowns();
@@ -173,8 +176,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
         {/* Caregiver and client selects are populated from the API */}
         <div className="form-group">
           <label>Caregiver *</label>
-          <select name="caregiver_id" value={formData.caregiver_id} onChange={handleChange} required>
-            <option value="">Select caregiver</option>
+          <select name="caregiver_id" value={formData.caregiver_id} onChange={handleChange} required disabled={loadingDropdowns}>
+            <option value="">{loadingDropdowns ? 'Loading...' : 'Select caregiver'}</option>
             {caregivers.map((cg) => (
               <option key={cg.id} value={cg.id}>{cg.name}</option>
             ))}
@@ -182,8 +185,8 @@ function AddVisitModal({ onClose, onSuccess, prefillDate }) {
         </div>
         <div className="form-group">
           <label>Client *</label>
-          <select name="client_id" value={formData.client_id} onChange={handleChange} required>
-            <option value="">Select client</option>
+          <select name="client_id" value={formData.client_id} onChange={handleChange} required disabled={loadingDropdowns}>
+            <option value="">{loadingDropdowns ? 'Loading...' : 'Select client'}</option>
             {clients.map((cl) => (
               <option key={cl.id} value={cl.id}>{cl.name}</option>
             ))}
