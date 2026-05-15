@@ -87,22 +87,21 @@
 
 /* ── Caregiver list ── */
 .caregiver-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-width: 33.75rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
-/* ── Caregiver card — horizontal ── */
+/* ── Caregiver card ── */
 .caregiver-card {
   background: #ffffff;
   border-radius: 0.875rem;
-  padding: 1.125rem 1.25rem;
+  padding: 1.25rem;
   box-shadow: 0 0.125rem 0.75rem rgba(58, 84, 164, 0.07);
   border: 1px solid rgba(230, 230, 240, 0.8);
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.875rem;
   transition: box-shadow 0.2s, border-color 0.2s;
 }
 
@@ -332,6 +331,10 @@
 
   .page-title {
     font-size: 1.25rem;
+  }
+
+  .caregiver-list {
+    grid-template-columns: 1fr;
   }
 
   .caregiver-card {

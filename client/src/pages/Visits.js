@@ -27,6 +27,13 @@ function formatTime(timeStr) {
   return `${display}:${m} ${ampm}`;
 }
 
+const STATUS_DATE_COLORS = {
+  scheduled:   '#3a54a4',
+  in_progress: '#3a54a4',
+  completed:   '#3a54a4',
+  cancelled:   '#f14e4b',
+};
+
 // Renders a colored status pill based on the visit's current status
 function StatusBadge({ status }) {
   return <span className={`status-badge status-badge--${status}`}>{status}</span>;
@@ -127,6 +134,8 @@ function Visits() {
                 const start = formatShortDate(startDate);
                 const end = isMultiDay ? formatShortDate(endDate) : null;
 
+                const dateColor = STATUS_DATE_COLORS[visit.status] || '#3a54a4';
+
                 return (
                   // Clicking any visit row opens the detail modal
                   <div
@@ -138,18 +147,18 @@ function Visits() {
                     <div className="visit-date-block">
                       {isMultiDay ? (
                         <>
-                          <div className="visit-day" style={{ fontSize: '14px' }}>
+                          <div className="visit-day" style={{ fontSize: '14px', color: dateColor }}>
                             {start.month} {start.day}
                           </div>
-                          <div className="visit-date-arrow">→</div>
-                          <div className="visit-day" style={{ fontSize: '14px' }}>
+                          <div className="visit-date-arrow" style={{ color: dateColor }}>→</div>
+                          <div className="visit-day" style={{ fontSize: '14px', color: dateColor }}>
                             {end.month} {end.day}
                           </div>
                         </>
                       ) : (
                         <>
-                          <div className="visit-day">{start.day}</div>
-                          <div className="visit-month">{start.month}</div>
+                          <div className="visit-day" style={{ color: dateColor }}>{start.day}</div>
+                          <div className="visit-month" style={{ color: dateColor }}>{start.month}</div>
                         </>
                       )}
                     </div>
@@ -168,6 +177,11 @@ function Visits() {
 
                     {/* Status badge */}
                     <div className="visit-actions">
+                      {visit.status === 'completed' && (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      )}
                       <StatusBadge status={visit.status} />
                     </div>
                   </div>
